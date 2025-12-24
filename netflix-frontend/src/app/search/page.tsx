@@ -1,11 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import styled from '@emotion/styled';
 import { useSearchParams, useRouter } from 'next/navigation';
 import api from '@/lib/axios';
 import { useModalStore } from '@/store/useModalStore';
 import InfoModal from '@/components/common/InfoModal';
-import tmdb, { fetchLogo } from '@/lib/tmdb'; // Use direct TMDB if needed for search
+import tmdb, { fetchLogo } from '@/lib/tmdb'; 
 import { ASSETS } from '@/constants/assets';
 import HoverCard from '@/components/common/HoverCard';
 import Footer from '@/components/layout/Footer';
@@ -173,7 +173,7 @@ const WatchNowBadge = styled.div`
   cursor: pointer;
 `;
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const rawQuery = searchParams.get('q') || '';
   const query = rawQuery.toLowerCase();
@@ -344,90 +344,6 @@ export default function SearchPage() {
     return () => clearTimeout(timer);
   }, [query]);
 
-// New Badges from Screenshot
-const BottomBadge = styled.div`
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #db0000;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 2px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  z-index: 5;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  white-space: nowrap;
-`;
-
-const LiveBadgeContainer = styled.div`
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  z-index: 5;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-`;
-
-const LiveRed = styled.div`
-  background: #db0000;
-  color: white;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
-`;
-
-const LiveDate = styled.div`
-  background: rgba(255, 255, 255, 0.9);
-  color: black;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
-`;
-
-const NewEpisodeContainer = styled.div`
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  z-index: 5;
-`;
-
-const NewEpBadge = styled.div`
-  background: #db0000;
-  color: white;
-  padding: 2px 6px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  border-radius: 2px;
-  text-transform: uppercase;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-`;
-
-const WatchNowBadge = styled.div`
-  background: white;
-  color: black;
-  padding: 2px 8px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  border-radius: 12px;
-  text-transform: uppercase;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  cursor: pointer;
-`;
-
   // Helper to randomize badges for visual fidelity to screenshot
   const getBadge = (index: number) => {
        if (index === 0) return { type: 'NEW_SEASON' }; // Stranger Things in screenshot
@@ -492,21 +408,21 @@ const WatchNowBadge = styled.div`
                     )}
 
                     {badge?.type === 'NEW_SEASON' && (
-                         <BottomBadge>New Season</BottomBadge>
+                        <BottomBadge>New Season</BottomBadge>
                     )}
 
                     {badge?.type === 'LIVE' && (
-                         <LiveBadgeContainer>
-                             <LiveRed>Live</LiveRed>
-                             <LiveDate>{badge.date}</LiveDate>
-                         </LiveBadgeContainer>
+                        <LiveBadgeContainer>
+                            <LiveRed>Live</LiveRed>
+                            <LiveDate>{badge.date}</LiveDate>
+                        </LiveBadgeContainer>
                     )}
 
                     {badge?.type === 'NEW_EPISODE' && (
-                         <NewEpisodeContainer>
-                             <NewEpBadge>New Episode</NewEpBadge>
-                             <WatchNowBadge>Watch Now</WatchNowBadge>
-                         </NewEpisodeContainer>
+                        <NewEpisodeContainer>
+                            <NewEpBadge>New Episode</NewEpBadge>
+                            <WatchNowBadge>Watch Now</WatchNowBadge>
+                        </NewEpisodeContainer>
                     )}
                  </HoverCard>
              );
@@ -516,5 +432,13 @@ const WatchNowBadge = styled.div`
       <Footer />
       <InfoModal />
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading search...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

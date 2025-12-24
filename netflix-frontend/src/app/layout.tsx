@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import GlobalStylesProvider from '../components/GlobalStylesProvider';
 import Navbar from '@/components/layout/Navbar';
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <GlobalStylesProvider>
-          <Navbar />
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           {children}
         </GlobalStylesProvider>
       </body>

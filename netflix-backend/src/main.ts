@@ -7,7 +7,7 @@ async function bootstrap() {
 
   // 1. ENABLE CORS HERE
   app.enableCors({
-    origin: 'http://localhost:3000', // Allow only this origin
+    origin: process.env.CLIENT_URL || 'http://localhost:3000', // Dynamic Origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

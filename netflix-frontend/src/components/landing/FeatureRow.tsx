@@ -6,13 +6,14 @@ const Container = styled.section`
   display: flex;
   background-color: black;
   color: white;
-  padding: 50px 5%;
+  padding: 2rem 5%; /* Smaller padding for mobile */
   justify-content: center;
   align-items: center;
   /* If direction is 'row-reverse', image is on left, text on right */
   flex-direction: column;
 
   @media (min-width: 960px) {
+    padding: 50px 5%; /* Original padding for desktop */
     flex-direction: ${({ direction }: { direction?: string }) => direction || 'row'};
   }
 `;
@@ -30,10 +31,13 @@ const TextPane = styled.div`
 `;
 
 const Title = styled.h2`
-  font-size: 2rem;
+  font-size: 1.75rem; /* Smaller font on mobile */
   font-weight: 900;
   margin-bottom: 1rem;
   
+  @media (min-width: 600px) {
+    font-size: 2.5rem;
+  }
   @media (min-width: 960px) {
     font-size: 3rem;
   }

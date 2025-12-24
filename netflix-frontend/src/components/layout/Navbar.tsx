@@ -24,18 +24,32 @@ const Nav = styled.nav<{ isScrolled: boolean }>`
   /* Magic: Transparent at top, Black when scrolled */
   background-color: ${({ isScrolled }) => (isScrolled ? '#141414' : 'transparent')};
   background-image: ${({ isScrolled }) => (isScrolled ? 'none' : 'linear-gradient(to bottom,rgba(0,0,0,.7) 10%,rgba(0,0,0,0))')};
+  
+  @media (max-width: 500px) {
+      height: 50px; /* Slimmer navbar on mobile */
+      padding: 0 3%;
+  }
 `;
 
 const Left = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+  
+  @media (max-width: 500px) {
+      gap: 10px;
+  }
 `;
 
 const Logo = styled.img`
   height: 25px;
   margin-right: 25px;
   @media (min-width: 950px) { height: 30px; }
+  
+  @media (max-width: 500px) {
+      height: 20px; /* Smaller logo on mobile */
+      margin-right: 10px;
+  }
 `;
 
 const Links = styled.ul`
@@ -57,6 +71,10 @@ const Right = styled.div`
   align-items: center;
   gap: 20px;
   color: white;
+
+  @media (max-width: 500px) {
+      gap: 10px;
+  }
 `;
 
 const Avatar = styled.img`
@@ -77,6 +95,13 @@ const SearchInput = styled.input<{ visible: boolean }>`
   transition: width 0.3s, opacity 0.3s;
   visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
   outline: none;
+
+  @media (max-width: 500px) {
+      /* On mobile, take up more relative space or absolute position if needed, 
+         for now reducing max-width to avoid breaking layout */
+      width: ${({ visible }) => (visible ? '110px' : '0px')};
+      font-size: 0.8rem;
+  }
 `;
 
 const ProfileMenu = styled.div`

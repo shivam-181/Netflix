@@ -5,7 +5,7 @@ import LandingNavbar from './LandingNavbar';
 
 const HeroContainer = styled.div`
   position: relative;
-  min-height: 100vh; /* changed from fixed height to min-height */
+  height: 115vh; /* Stretched a bit per request */
   width: 100%;
   background-image: url(${ASSETS.LANDING_BG});
   background-size: cover;
@@ -38,25 +38,20 @@ const Content = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
-  /* Reduced top padding for mobile to bring content up */
-  padding-top: 6rem; 
+  /* "Little down" - bias visual center downwards */
+  padding-top: 8rem; 
   padding-left: 1rem;
   padding-right: 1rem;
-  padding-bottom: 2rem;
   color: white;
-
-  @media (min-width: 960px) {
-    padding-top: 8rem;
-  }
 `;
 
 const Title = styled.h1`
-  font-size: 2rem; /* Mobile first size */
+  font-size: 2rem;
   font-weight: 900;
   margin-bottom: 1rem;
   max-width: 600px;
-  line-height: 1.1; 
-  letter-spacing: -1px;
+  line-height: 1.1; /* Contracted line height */
+  letter-spacing: -1px; /* Tighter letter spacing */
 
   @media (min-width: 600px) {
     font-size: 2.5rem;
@@ -79,7 +74,7 @@ const Subtitle = styled.p`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Increased gap for touch targets on mobile */
+  gap: 8px; /* Tighter gap */
   width: 100%;
   max-width: 580px; 
   margin-top: 1.5rem;
@@ -93,32 +88,26 @@ const Form = styled.form`
 
 const Input = styled.input`
   flex: 1;
-  width: 100%; /* Full width on mobile */
-  height: 3rem; /* Slightly smaller for mobile */
+  height: 3.5rem; /* ~56px height */
   padding: 0 1rem;
   border-radius: 4px;
   border: 1px solid rgba(128, 128, 128, 0.7);
-  background: rgba(22, 22, 22, 0.7); 
+  background: rgba(22, 22, 22, 0.7); /* Darker translucent */
   color: white;
   font-size: 1rem;
   
   &::placeholder {
     color: #b3b3b3;
   }
-
-  @media (min-width: 960px) {
-    height: 3.5rem;
-  }
 `;
 
 const GetStartedButton = styled.button`
-  width: 100%; /* Full width button on mobile */
-  height: 3rem; 
+  height: 3.5rem; /* Match input height */
   background-color: var(--netflix-red);
   color: white;
   border: none;
-  padding: 0 1rem;
-  font-size: 1.125rem; /* Smaller font on mobile */
+  padding: 0 1.5rem;
+  font-size: 1.5rem;
   font-weight: 500;
   cursor: pointer;
   border-radius: 4px;
@@ -131,16 +120,6 @@ const GetStartedButton = styled.button`
   &:hover {
     background-color: #c11119;
   }
-
-  @media (min-width: 600px) {
-     width: auto; /* Auto width on larger screens */
-     padding: 0 1.5rem;
-     font-size: 1.5rem;
-  }
-
-  @media (min-width: 960px) {
-    height: 3.5rem;
-  }
 `;
 
 export default function LandingHero() {
@@ -151,7 +130,7 @@ export default function LandingHero() {
       <Content>
         <Title>Unlimited movies, shows, and more</Title>
         <Subtitle>Starts at ₹149. Cancel at any time.</Subtitle>
-        <p style={{ fontSize: '1.125rem', marginBottom: '0', fontWeight: 400, padding: '0 20px', lineHeight: '1.5' }}>
+        <p style={{ fontSize: '1.25rem', marginBottom: '0', fontWeight: 400, padding: '0 20px', lineHeight: '1.5' }}>
           Ready to watch? Enter your email to create or restart your membership.
         </p>
 

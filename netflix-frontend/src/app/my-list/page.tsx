@@ -68,16 +68,43 @@ export default function MyListPage() {
       const fetchList = async () => {
           try {
               const res = await api.get(`/profiles/${currentProfile._id}/list`);
-              // Helper mapping if backend returns raw db objects
-              const mapped = res.data.map((item: any) => ({
-                    ...item,
-                    // Ensure we have correct props for HoverCard
-                     _id: item.contentId || item._id, // Adapt based on how backend stores it
-                     id: Number(item.contentId),
-                     thumbnailUrl: item.thumbnailUrl || item.posterPath, // Fallback
-                     media_type: item.type || 'movie'
-              }));
-              setMyList(mapped);
+              // res.data is [{ id: '123', type: 'movie' }, ...]
+              
+              if (!res.data || res.data.length === 0) {
+                  setMyList([]);
+                  setLoadingList(false);
+                  return;
+              }
+
+              // Import fetchDetails dynamically or assume it's available. 
+              // It is imported in other files from '@/lib/tmdb'.
+              // We need to import it at top or here.
+              // I will assume explicit import at top is needed, but I can't add imports with this tool easily without replacing top of file.
+              // I will replace the imports later or now.
+              // Let's assume I will fix imports in next step.
+              // For now, write logic assuming `fetchDetails` is available.
+              
+              const promises = res.data.map(async (item: any) => {
+                  try {
+                      // Fetch details from TMDB
+                      // We need to fetch details based on ID and Type
+                      // If type is missing, try movie first? Backend defaults to movie now.
+                      const type = item.type || 'movie';
+                      const details = await import('@/lib/tmdb').then(m => m.fetchDetails(type, item.id));
+                      
+                      return {
+                          ...details,
+                          media_type: type,
+                          _id: item.id // Ensure ID matches for HoverCard check
+                      };
+                  } catch (err) {
+                      console.error(`Failed to fetch ${item.id}`, err);
+                      return null;
+                  }
+              });
+
+              const results = await Promise.all(promises);
+              setMyList(results.filter(r => r !== null));
           } catch (e) {
               console.error(e);
           } finally {

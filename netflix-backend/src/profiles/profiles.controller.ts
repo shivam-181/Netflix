@@ -32,8 +32,8 @@ export class ProfilesController {
   }
 
   @Post(':id/list')
-  addToList(@Param('id') id: string, @Body('contentId') contentId: string, @Req() req) {
-    return this.profilesService.addToList(id, contentId, req.user);
+  addToList(@Param('id') id: string, @Body() body: { contentId: string; type?: string }, @Req() req) {
+    return this.profilesService.addToList(id, { id: body.contentId, type: body.type || 'movie' }, req.user);
   }
 
   @Delete(':id/list/:contentId')

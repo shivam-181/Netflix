@@ -291,8 +291,9 @@ export default function InfoModal() {
   const toggleList = () => {
     if (!movie) return;
     const id = movie._id || movie.id?.toString();
+    const type = movie.media_type || (movie.first_air_date ? 'tv' : 'movie');
     if (isAdded) removeFromList(id);
-    else addToList(id);
+    else addToList(id, type);
   };
 
   const handleClose = useCallback(() => {

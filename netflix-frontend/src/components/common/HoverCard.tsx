@@ -269,8 +269,9 @@ export default function HoverCard({ item, isLarge, children, bottomOffset }: { i
   const toggleList = (e: any) => {
     e.stopPropagation();
     const id = item._id || item.id?.toString();
+    const type = item.media_type || (item.first_air_date ? 'tv' : 'movie');
     if (isAdded) removeFromList(id);
-    else addToList(id);
+    else addToList(id, type);
   };
 
   const imageUrl = isLarge && item.poster_path

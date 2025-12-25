@@ -47,16 +47,23 @@ export class ProfilesService {
     return { message: 'Profile deleted successfully' };
   }
 
-  async addToList(profileId: string, contentId: string, user: UserDocument) {
+  async addToList(profileId: string, item: { id: string; type: string }, user: UserDocument) {
     const profile = await this.profileModel.findOne({ _id: profileId, userId: user._id } as any);
     if (!profile) throw new BadRequestException('Profile not found');
 
-    // Add to set (avoid duplicates)
+    // Add to set (avoid duplicates by ID) - $addToSet works with objects if they are identical, 
+    // but better to manually check if we want to be safe or use simple push if we check existence first.
+    // MongoDB $addToSet objects must exactly match.
+    // Let's use a simpler approach: check existence then push.
+    
+    const exists = profile.myList.some(i => i.id === item.id);
+    if (exists) return profile;
+
     return this.profileModel.findByIdAndUpdate(
       profileId,
-      { $addToSet: { myList: contentId } },
+      { $push: { myList: item } },
       { new: true }
-    ).populate('myList');
+    );
   }
 
   async removeFromList(profileId: string, contentId: string, user: UserDocument) {
@@ -65,13 +72,13 @@ export class ProfilesService {
 
     return this.profileModel.findByIdAndUpdate(
       profileId,
-      { $pull: { myList: contentId } },
+      { $pull: { myList: { id: contentId } } },
       { new: true }
-    ).populate('myList');
+    );
   }
 
   async getList(profileId: string, user: UserDocument) {
-    const profile = await this.profileModel.findOne({ _id: profileId, userId: user._id } as any).populate('myList');
+    const profile = await this.profileModel.findOne({ _id: profileId, userId: user._id } as any);
     if (!profile) throw new BadRequestException('Profile not found');
     return profile.myList;
   }

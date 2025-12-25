@@ -20,8 +20,14 @@ export class Profile {
   @Prop({ default: false })
   isKid: boolean;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Content' }] })
-  myList: Content[];
+  @Prop({
+    type: [{
+      id: { type: String, required: true },
+      type: { type: String, default: 'movie' }
+    }],
+    default: []
+  })
+  myList: { id: string; type: string }[];
 
   @Prop({
     type: [{

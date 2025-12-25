@@ -29,7 +29,7 @@ interface ProfileState {
   addProfile: (name: string, isKid?: boolean) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
 
-  addToList: (contentId: string) => void;
+  addToList: (contentId: string, type?: string) => void;
   removeFromList: (contentId: string) => void;
   isInList: (contentId: string) => boolean;
 
@@ -60,7 +60,8 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     // Fetch the real list from backend
     try {
        const res = await api.get(`/profiles/${profile._id}/list`);
-       const ids = res.data.map((item: any) => item._id);
+       // Backend returns [{ id: '123', type: 'movie' }, ...]
+       const ids = res.data.map((item: any) => item.id);
        set({ myList: ids });
     } catch (err) {
        console.error("Failed to load list", err);
@@ -89,7 +90,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  addToList: async (contentId) => {
+  addToList: async (contentId, type = 'movie') => {
     const { currentProfile } = get();
     if (!currentProfile) return;
     
@@ -99,7 +100,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       set({ myList: [...currentList, contentId] });
       
       try {
-        await api.post(`/profiles/${currentProfile._id}/list`, { contentId });
+        await api.post(`/profiles/${currentProfile._id}/list`, { contentId, type });
       } catch (err) {
         console.error("Failed to add to list", err);
         // Revert on failure

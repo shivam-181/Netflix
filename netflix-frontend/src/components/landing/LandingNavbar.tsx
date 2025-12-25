@@ -8,9 +8,9 @@ const Nav = styled.nav`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 120rem; /* Reverted to large width */
-  height: 7.5rem; /* Reverted height */
-  margin: 0 auto -7.5rem auto; /* Reverted margin */
+  max-width: 120rem; 
+  height: 5.5rem; /* Reduced from 7.5rem to move items up */
+  margin: 0 auto -5.5rem auto; /* Adjusted margin */
   z-index: 10;
   position: relative;
   gap: 1rem;

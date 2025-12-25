@@ -7,19 +7,37 @@ const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
+  max-width: 120rem; /* Reverted to large width */
+  height: 7.5rem; /* Reverted height */
+  margin: 0 auto -7.5rem auto; /* Reverted margin */
   z-index: 10;
+  position: relative;
+  gap: 1rem;
   
-  @media (max-width: 600px) { padding: 1rem; }
+  padding: 0 1.5rem; /* Base padding */
+
+  @media (min-width: 600px) {
+    padding: 0 2rem;
+  }
+
+  @media (min-width: 960px) {
+    padding: 0 5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 0 9.25rem; /* Aggressive padding for "inwards" feel */
+  }
 `;
 
 const Logo = styled.img`
-  height: 2.5rem;
-  @media (min-width: 900px) { height: 3.5rem; }
+  height: 2rem; /* Smaller mobile base */
+  width: auto; 
+  
+  @media (min-width: 900px) { 
+      height: 3rem; /* Reduced from 5rem to 3rem */
+      width: auto;
+  }
 `;
 
 const SignInButton = styled(Link)`

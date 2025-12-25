@@ -38,50 +38,84 @@ const Content = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
-  /* "Little down" - bias visual center downwards */
-  padding-top: 8rem; 
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 0 1rem;
   color: white;
 `;
 
 const Title = styled.h1`
   font-size: 2rem;
-  font-weight: 900;
-  margin-bottom: 1rem;
-  max-width: 600px;
-  line-height: 1.1; /* Contracted line height */
-  letter-spacing: -1px; /* Tighter letter spacing */
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  max-width: 640px;
+  line-height: 1.25;
 
   @media (min-width: 600px) {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    font-weight: 700;
   }
+
   @media (min-width: 960px) {
-    font-size: 3rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  @media (min-width: 1280px) {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
   }
 `;
 
 const Subtitle = styled.p`
-  font-size: 1.125rem;
+  font-size: 1rem;
+  font-weight: 400;
   margin-bottom: 1rem;
-  font-weight: 500;
+  color: rgb(255, 255, 255);
   
+  @media (min-width: 600px) {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
   @media (min-width: 960px) {
-    font-size: 1.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+  }
+`;
+
+const Description = styled.h3`
+  font-size: 1.125rem; /* 18px */
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+  color: white;
+
+  @media (min-width: 960px) {
+    font-size: 1.25rem; /* 20px */
   }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Tighter gap */
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  max-width: 580px; 
-  margin-top: 1.5rem;
+  max-width: 36.625rem; /* Precise width per snippet */
+  margin: 1rem auto 0;
+  padding-top: 16px;
 
-  @media (min-width: 960px) {
+  @media (min-width: 600px) {
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start; /* Aligns input and button tops */
     gap: 8px; 
   }
 `;
@@ -102,37 +136,79 @@ const Input = styled.input`
 `;
 
 const GetStartedButton = styled.button`
-  height: 3.5rem; /* Match input height */
-  background-color: var(--netflix-red);
-  color: white;
-  border: none;
-  padding: 0 1.5rem;
-  font-size: 1.5rem;
+  min-height: 3.5rem;
+  width: auto;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem; /* Base size */
   font-weight: 500;
+  border-radius: 0.25rem; /* 4px */
+  background: rgb(229, 9, 20);
+  color: rgb(255, 255, 255);
+  border: 0;
   cursor: pointer;
-  border-radius: 4px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 1rem; /* Adjust gap for arrow */
   white-space: nowrap;
+  
+  /* Transitions per snippet */
+  transition-duration: 250ms;
+  transition-property: background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.68, 0.06);
+
+  /* Layout & Resets */
+  line-height: 1;
+  letter-spacing: normal;
+  vertical-align: text-top;
+  appearance: none;
+  user-select: none;
+  fill: currentcolor;
+
+  position: relative; /* Ensure relative for the absolute ::after */
+
+  &::after {
+    inset: 0px;
+    position: absolute;
+    transition: inherit;
+    border-style: solid;
+    border-width: 0.0625rem;
+    border-radius: calc(0.1875rem); /* approx 3px */
+    content: "";
+    border-color: rgba(0, 0, 0, 0);
+  }
 
   &:hover {
-    background-color: #c11119;
+    background: rgb(193, 17, 25); /* Darker red */
   }
+
+  @media (min-width: 1280px) {
+      font-size: 1.5rem; /* Large size for large screens */
+  }
+`;
+
+const NavBarGradient = styled.div`
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8000) 0.000%, rgba(0, 0, 0, 0.7889) 8.333%, rgba(0, 0, 0, 0.7556) 16.67%, rgba(0, 0, 0, 0.7000) 25.00%, rgba(0, 0, 0, 0.6222) 33.33%, rgba(0, 0, 0, 0.5222) 41.67%, rgba(0, 0, 0, 0.4000) 50.00%, rgba(0, 0, 0, 0.2778) 58.33%, rgba(0, 0, 0, 0.1778) 66.67%, rgba(0, 0, 0, 0.1000) 75.00%, rgba(0, 0, 0, 0.04444) 83.33%, rgba(0, 0, 0, 0.01111) 91.67%, rgba(0, 0, 0, 0.000) 100.0%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10rem; /* Covers navbar and a bit more */
+  z-index: 2;
 `;
 
 export default function LandingHero() {
   return (
     <HeroContainer>
+      <NavBarGradient />
       <LandingNavbar />
       
       <Content>
         <Title>Unlimited movies, shows, and more</Title>
         <Subtitle>Starts at ₹149. Cancel at any time.</Subtitle>
-        <p style={{ fontSize: '1.25rem', marginBottom: '0', fontWeight: 400, padding: '0 20px', lineHeight: '1.5' }}>
+        <Description>
           Ready to watch? Enter your email to create or restart your membership.
-        </p>
+        </Description>
 
         <Form action="/auth/signup">
           <Input type="email" placeholder="Email address" required />

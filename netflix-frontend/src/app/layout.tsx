@@ -4,10 +4,7 @@ import GlobalStylesProvider from '../components/GlobalStylesProvider';
 import Navbar from '@/components/layout/Navbar';
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s - Netflix',
-    default: 'Netflix',
-  },
+  title: 'Netflix India - Watch Shows Online, Watch Movies Online',
   description: 'Watch TV Shows Online, Watch Movies Online',
 };
 

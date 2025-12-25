@@ -5,11 +5,12 @@ import LandingNavbar from './LandingNavbar';
 
 const HeroContainer = styled.div`
   position: relative;
-  height: 115vh; /* Stretched a bit per request */
+  height: 100vh; /* Restore to standard viewport height for better cover fit */
+  min-height: 45rem; /* Ensure minimum height */
   width: 100%;
   background-image: url(${ASSETS.LANDING_BG});
-  background-size: cover;
-  background-position: center;
+  background-size: 102%; /* Scaled slightly (contracted/zoomed) for authentic look */
+  background-position: center 5%; /* Moved slightly up from top */
   
   /* The dark overlay logic */
   &::after {
@@ -19,7 +20,7 @@ const HeroContainer = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* 40% opacity black */
+    background: rgba(0, 0, 0, 0.4); 
     background-image: linear-gradient(
       to top,
       rgba(0, 0, 0, 0.8) 0,
@@ -38,12 +39,13 @@ const Content = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0 1rem;
+  padding: 0 1rem; /* Removed top padding to center content vertically */
   color: white;
+  box-sizing: border-box; 
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
+  font-size: 1.75rem; /* Reduced base size */
   font-weight: 700;
   margin-bottom: 0.5rem;
   max-width: 640px;
@@ -60,38 +62,38 @@ const Title = styled.h1`
   }
 
   @media (min-width: 1280px) {
-    font-size: 3.5rem;
+    font-size: 3.5rem; /* Increased size "a little" */
     font-weight: 900;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem; 
   }
 `;
 
 const Subtitle = styled.p`
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 700; /* Bold */
   margin-bottom: 1rem;
   color: rgb(255, 255, 255);
   
   @media (min-width: 600px) {
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 700;
   }
 
   @media (min-width: 960px) {
     font-size: 1rem;
-    font-weight: 400;
-    margin-bottom: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
   }
 
   @media (min-width: 1280px) {
-    font-size: 1.25rem;
-    font-weight: 500;
-    margin-bottom: 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem; /* Increased to push Ready to watch text down */
   }
 `;
 
 const Description = styled.h3`
-  font-size: 1.125rem; /* 18px */
+  font-size: 0.875rem; /* Reduced to small */
   font-weight: 400;
   line-height: 1.5;
   margin: 0;
@@ -99,7 +101,7 @@ const Description = styled.h3`
   color: white;
 
   @media (min-width: 960px) {
-    font-size: 1.25rem; /* 20px */
+    font-size: 1rem; /* Reduced */
   }
 `;
 
@@ -110,8 +112,8 @@ const Form = styled.form`
   gap: 8px;
   width: 100%;
   max-width: 36.625rem; /* Precise width per snippet */
-  margin: 1rem auto 0;
-  padding-top: 16px;
+  margin: 0.5rem auto 0; /* Reduced margin-top to bring closer to text */
+  padding-top: 0; /* Removed padding to bring closer */
 
   @media (min-width: 600px) {
     flex-direction: row;
@@ -136,20 +138,21 @@ const Input = styled.input`
 `;
 
 const GetStartedButton = styled.button`
+  box-sizing: border-box; 
   min-height: 3.5rem;
   width: auto;
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem; /* Base size */
-  font-weight: 500;
+  font-weight: 600; /* Bold per image */
   border-radius: 0.25rem; /* 4px */
-  background: rgb(229, 9, 20);
-  color: rgb(255, 255, 255);
+  background: #e50914; /* TrendingModal Red */
+  color: white; 
   border: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem; /* Adjust gap for arrow */
+  gap: 1rem; 
   white-space: nowrap;
   
   /* Transitions per snippet */
@@ -165,7 +168,7 @@ const GetStartedButton = styled.button`
   user-select: none;
   fill: currentcolor;
 
-  position: relative; /* Ensure relative for the absolute ::after */
+  position: relative; 
 
   &::after {
     inset: 0px;
@@ -173,13 +176,13 @@ const GetStartedButton = styled.button`
     transition: inherit;
     border-style: solid;
     border-width: 0.0625rem;
-    border-radius: calc(0.1875rem); /* approx 3px */
+    border-radius: calc(0.1875rem); 
     content: "";
     border-color: rgba(0, 0, 0, 0);
   }
 
   &:hover {
-    background: rgb(193, 17, 25); /* Darker red */
+    background: #f40612; /* Lighter Red per TrendingModal */
   }
 
   @media (min-width: 1280px) {
@@ -213,7 +216,10 @@ export default function LandingHero() {
         <Form action="/auth/signup">
           <Input type="email" placeholder="Email address" required />
           <GetStartedButton type="submit">
-            Get Started &gt;
+            Get Started 
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </GetStartedButton>
         </Form>
       </Content>

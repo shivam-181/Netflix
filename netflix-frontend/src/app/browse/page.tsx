@@ -252,7 +252,6 @@ export default function BrowsePage() {
               }))} 
            />
         )}
-        {myListContent.length > 0 && <ContentRow title="My List" data={myListContent} />}
         <ContentRow title="Trending Now" data={trending} />
         <ContentRow title="Netflix Originals" data={netflixOriginals} />
         <ContentRow title="Top Rated" data={topRated} />

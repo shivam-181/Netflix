@@ -210,7 +210,7 @@ const MOCK_DATA: TrendingItem[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/original/uUVXEEyMsyWxrcbmAppUCYg6egV.jpg',
     description: 'In 2001, somewhere in rural India, two young brides get accidentally swapped on a train. In the ensuing chaos, they both encounter a host of colourful characters.',
     year: '2024',
-    maturity: 'U/A 13+',
+    maturity: 'U/A 16+',
     genres: ['Comedy', 'Drama']
   },
   { 
@@ -307,7 +307,7 @@ export default function TrendingCurveSection({ data = [] }: TrendingProps) {
               backdropUrl: `https://image.tmdb.org/t/p/original${item.backdrop_path}`,
               description: item.overview,
               year: (item.first_air_date || item.release_date || '').substring(0, 4),
-              maturity: item.adult ? 'A' : 'U/A 13+', // Simple heuristic
+              maturity: item.adult ? 'A' : 'U/A 16+', // Simple heuristic
               genres: [] 
            }));
         } catch (e) {

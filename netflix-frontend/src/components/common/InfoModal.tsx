@@ -426,7 +426,7 @@ export default function InfoModal() {
                     <span>{getYear()}</span>
                     <span>{getDuration()}</span>
                     <Badge>HD</Badge>
-                    <AgeBadge>U/A 13+</AgeBadge>
+                    <AgeBadge>U/A 16+</AgeBadge>
                     {/* Placeholder for 'mild language' etc */}
                     {/* <span style={{ fontSize: '0.9rem', color: '#ccc' }}>mild language</span> */}
                   </StatsLine>

@@ -256,7 +256,7 @@ export default function Billboard({ movie }: BillboardProps) {
         const fetch = async () => {
             const type = movie.media_type || 'movie'; 
             
-            // If custom logo exists, only fetch trailer
+            // If custom logo exists (from DB/Mock), only fetch trailer
             if (movie.logoUrl) {
                 const trailer = await fetchTrailer(type, movie.id!);
                 if (trailer) setTrailerKey(trailer.key);
@@ -302,9 +302,18 @@ export default function Billboard({ movie }: BillboardProps) {
   
 
 
+  const backgroundSrc = movie.title === 'Stranger Things' 
+      ? '/stranger-things-bg.jpg' 
+      : (movie.backdropUrl || movie.thumbnailUrl);
+
   return (
     <Container>
-      <BackgroundImage show={!showVideo} src={movie.backdropUrl || movie.thumbnailUrl} alt={movie.title} />
+      <BackgroundImage 
+        show={!showVideo} 
+        src={backgroundSrc} 
+        alt={movie.title}
+        style={movie.title === 'Stranger Things' ? { transform: 'scale(1.35) translateX(150px) translateY(-60px)', objectPosition: 'center 20%' } : {}}
+      />
       
       {trailerKey && (
           <VideoWrapper show={showVideo}>
@@ -353,7 +362,7 @@ export default function Billboard({ movie }: BillboardProps) {
           <MuteButton onClick={() => setMuted(!muted)}>
             {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
           </MuteButton>
-          <AgeBadge>U/A 13+</AgeBadge>
+          <AgeBadge>U/A 16+</AgeBadge>
       </RightControls>
     </Container>
   );

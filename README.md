@@ -45,7 +45,7 @@ Standard `autoplay` isn't enough. We needed granular control over the YouTube Pl
 - **Implementation**: Utilized `react-youtube` with generic `playerRef` management in `Billboard.tsx` and `InfoModal.tsx`.
 - **Outcome**: Seamless **Audio Sync** (Global Mute State persistence via Zustand), instant play/pause, and prevention of re-renders during state updates.
 
-### 4. **Robust Profile Architecture**
+### 3. **Robust Profile Architecture**
 - **Auth Flow**: Secure JWT-based authentication with `HTTP-Only` cookies (simulated).
 - **Profile Management**: Full CRUD operations for user profiles using **PUT/PATCH** methods for robustness.
 - **Navigation Guard**: Smart redirection logic ensuring users always land on the "Who's Watching?" gate before accessing content.

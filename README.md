@@ -6,7 +6,12 @@
 ![NestJS](https://img.shields.io/badge/NestJS-10.0-E0234E?logo=nestjs)
 ![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green?logo=mongodb)
 ![Framer Motion](https://img.shields.io/badge/Motion-Animation-purple?logo=framer)
-[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://netflixwatch.vercel.app/) 
+
+<p align="center">
+  <a href="https://netflixwatch.vercel.app/">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-WATCH_NOW-E50914?style=for-the-badge&logo=netflix&logoColor=white" alt="Live Demo" height="50" />
+  </a>
+</p> 
 
 > **"A pixel-perfect, high-performance replica of the Netflix India immersive experience."**
 

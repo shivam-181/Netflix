@@ -11,9 +11,10 @@ const PageContainer = styled.div`
   min-height: 100vh;
   width: 100%;
   background-color: #000;
-  background-image: url('https://image.tmdb.org/t/p/original/rIgbIIB6kX1V7z6mH43yXqE9hVj.jpg'); /* The Crown Backdrop */
-  background-size: cover;
-  background-position: center;
+  background-image: url('https://pad.mymovies.it/cinemanews/2016/135277/coverlg_home.jpg');
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  background-position: 35vw center;
   display: flex;
   flex-direction: column;
 

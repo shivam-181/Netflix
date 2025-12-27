@@ -10,7 +10,9 @@ export default function TitleManager() {
   useEffect(() => {
     let title = 'Netflix';
 
-    if (pathname === '/browse' || pathname === '/') {
+    if (pathname === '/') {
+      title = 'Netflix India – Watch Shows Online, Watch Movies Online';
+    } else if (pathname === '/browse') {
       title = 'Home – Netflix';
     } else if (pathname === '/tv' || pathname === '/shows') {
       title = 'TV Shows – Netflix';

@@ -45,11 +45,6 @@ Standard `autoplay` isn't enough. We needed granular control over the YouTube Pl
 - **Implementation**: Utilized `react-youtube` with generic `playerRef` management in `Billboard.tsx` and `InfoModal.tsx`.
 - **Outcome**: Seamless **Audio Sync** (Global Mute State persistence via Zustand), instant play/pause, and prevention of re-renders during state updates.
 
-### 3. **Dynamic "Stranger Things" Experience**
-A custom-coded easter egg to replicate Netflix's flagship promotional styles.
-- **Logic**: Custom transforms (`scale`, `translate`) applied conditionally to the Billboard component when specific titles are detected.
-- **Result**: A cinematic, "zoomed-in" hero state that breaks the grid for maximum visual impact.
-
 ### 4. **Robust Profile Architecture**
 - **Auth Flow**: Secure JWT-based authentication with `HTTP-Only` cookies (simulated).
 - **Profile Management**: Full CRUD operations for user profiles using **PUT/PATCH** methods for robustness.

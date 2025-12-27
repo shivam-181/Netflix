@@ -29,7 +29,7 @@ This project isn't just a UI clone; it's a deep dive into **modern web architect
 ### 🍿 The Browsing Interface
 *An infinite canvas of entertainment. Features dynamic ranking rows, "Continue Watching" logic based on user history, and our signature "Explore All" interactive headers.*
 
-![Home Page](./assets/home-page.png)
+![Browse Page](./assets/browse-page.png)
 
 ---
 

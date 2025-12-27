@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Patch, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { ProfilesService } from './profiles.service';
@@ -22,6 +22,11 @@ export class ProfilesController {
   @Delete(':id')
   delete(@Param('id') id: string, @Req() req) {
     return this.profilesService.deleteProfile(id, req.user);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() body: any, @Req() req) {
+    return this.profilesService.updateProfile(id, body, req.user);
   }
 
   // --- MY LIST ENDPOINTS ---

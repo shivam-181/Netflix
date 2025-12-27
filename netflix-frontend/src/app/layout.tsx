@@ -3,8 +3,10 @@ import type { Metadata } from 'next';
 import GlobalStylesProvider from '../components/GlobalStylesProvider';
 import Navbar from '@/components/layout/Navbar';
 
+import TitleManager from '@/components/layout/TitleManager';
+
 export const metadata: Metadata = {
-  title: 'Netflix India - Watch Shows Online, Watch Movies Online',
+  title: 'Home – Netflix',
   description: 'Watch TV Shows Online, Watch Movies Online',
 };
 
@@ -19,6 +21,7 @@ export default function RootLayout({
         <GlobalStylesProvider>
           <Suspense fallback={null}>
             <Navbar />
+            <TitleManager />
           </Suspense>
           {children}
         </GlobalStylesProvider>

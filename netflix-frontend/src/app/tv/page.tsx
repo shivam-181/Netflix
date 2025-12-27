@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useProfileStore } from '@/store/useProfileStore';
 import { useRouter } from 'next/navigation';
 import Billboard from '@/components/hero/Billboard';
 import ContentRow from '@/components/common/ContentRow';
@@ -20,7 +21,7 @@ const PageContainer = styled.div`
 const ContentStack = styled.div`
   position: relative;
   z-index: 10;
-  margin-top: -150px; 
+  margin-top: -70px; 
   padding-bottom: 50px;
   display: flex;
   flex-direction: column;
@@ -119,6 +120,7 @@ const ToggleBtn = styled.button`
 
 export default function TVPage() {
   const { user, isLoading } = useAuthStore();
+  const { currentProfile } = useProfileStore();
   const router = useRouter();
   const [billboardMovie, setBillboardMovie] = useState<any>(null);
   const [showGenres, setShowGenres] = useState(false);
@@ -131,6 +133,9 @@ export default function TVPage() {
   const [action, setAction] = useState<any[]>([]);
   const [comedy, setComedy] = useState<any[]>([]);
   const [doc, setDoc] = useState<any[]>([]);
+  const [kdrama, setKdrama] = useState<any[]>([]);
+  const [reality, setReality] = useState<any[]>([]);
+  const [scifi, setScifi] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -155,14 +160,20 @@ export default function TVPage() {
             topRatedRes,
             actionRes, 
             comedyRes, 
-            docRes     
+            docRes,
+            kdramaRes,
+            realityRes,
+            scifiRes     
         ] = await Promise.all([
-            tmdb.get(requests.fetchTrending), 
+            tmdb.get(requests.fetchTrendingTV), 
             tmdb.get(requests.fetchNetflixOriginals),
             tmdb.get('/tv/top_rated?language=en-US'),
             tmdb.get('/discover/tv?with_genres=10759'),
             tmdb.get('/discover/tv?with_genres=35'),
             tmdb.get('/discover/tv?with_genres=99'),
+            tmdb.get(requests.fetchKoreanDramas),
+            tmdb.get(requests.fetchRealityTVShows),
+            tmdb.get(requests.fetchSciFiFantasySeries),
         ]);
         
         // Map and filter (basic mapping)
@@ -205,6 +216,9 @@ export default function TVPage() {
         setAction(mapRes(actionRes));
         setComedy(mapRes(comedyRes));
         setDoc(mapRes(docRes));
+        setKdrama(mapRes(kdramaRes));
+        setReality(mapRes(realityRes));
+        setScifi(mapRes(scifiRes));
 
         // Pick distinct billboard from filtered list
         if (filteredOriginals.length > 0) {
@@ -277,7 +291,27 @@ export default function TVPage() {
         <Billboard movie={billboardMovie} />
 
       <ContentStack>
+        {currentProfile && currentProfile.watchHistory && currentProfile.watchHistory.length > 0 && (
+           <ContentRow 
+              title={`Continue Watching for ${currentProfile.name}`} 
+              data={currentProfile.watchHistory.map(h => ({
+                  _id: h.contentId,
+                  id: Number(h.contentId), 
+                  title: h.title || 'Resume Playing',
+                  thumbnailUrl: h.thumbnailUrl || '', 
+                  progress: h.progress,
+                  duration: `${Math.floor(h.duration / 60)}m`,
+                  description: '', 
+                  genre: 'TV',
+                  ageRating: 'UA'
+              }))} 
+           />
+        )}
+        <ContentRow title="Top 10 Shows in India Today" data={trending.slice(0, 10)} isRanked={true} />
         <ContentRow title="Trending Now" data={trending} />
+        <ContentRow title="K-Dramas" data={kdrama} />
+        <ContentRow title="Reality TV" data={reality} />
+        <ContentRow title="Sci-Fi & Fantasy Series" data={scifi} />
         <ContentRow title="Top Rated TV Shows" data={topRated} />
         <ContentRow title="Action & Adventure TV" data={action} />
         <ContentRow title="TV Comedies" data={comedy} />

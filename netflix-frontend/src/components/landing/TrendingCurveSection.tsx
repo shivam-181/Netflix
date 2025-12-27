@@ -69,8 +69,9 @@ const CurvedContent = styled.div`
 
 const Title = styled.h2`
   color: white;
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-family: unset;
+  font-size: 1.75rem; /* Increased a bit */
+  font-weight: 900;
   margin-bottom: 20px;
   margin-top: 20px; /* Added spacing */
   text-align: left;

@@ -9,8 +9,10 @@ const HeroContainer = styled.div`
   min-height: 45rem; /* Ensure minimum height */
   width: 100%;
   background-image: url(${ASSETS.LANDING_BG});
-  background-size: 102%; /* Scaled slightly (contracted/zoomed) for authentic look */
-  background-position: center 5%; /* Moved slightly up from top */
+  background-size: 100%; /* Fully touches the sides */
+  background-position: center 40%; /* Kept the slight upward shift */
+  background-repeat: no-repeat;
+  background-color: #000;
   
   /* The dark overlay logic */
   &::after {
@@ -20,13 +22,11 @@ const HeroContainer = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); 
-    background-image: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.8) 0,
-      rgba(0, 0, 0, 0) 60%,
-      rgba(0, 0, 0, 0.8) 100%
-    );
+    /* Diming the background + Dual gradients */
+    background-color: rgba(0, 0, 0, 0.4); /* General dim (40%) */
+    background-image: 
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%),
+      radial-gradient(ellipse 150% 100% at 50% 100%, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
   }
 `;
 
@@ -39,7 +39,7 @@ const Content = styled.div`
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 0 1rem; /* Removed top padding to center content vertically */
+  padding: 0 1rem 2rem; /* Reduced bottom padding to move content down */
   color: white;
   box-sizing: border-box; 
 `;
@@ -62,7 +62,8 @@ const Title = styled.h1`
   }
 
   @media (min-width: 1280px) {
-    font-size: 3.5rem; /* Increased size "a little" */
+    font-family: unset;
+    font-size: 3.5rem; /* Increased from 3rem */
     font-weight: 900;
     margin-bottom: 0.75rem; 
   }
@@ -86,9 +87,11 @@ const Subtitle = styled.p`
   }
 
   @media (min-width: 1280px) {
-    font-size: 1.125rem;
-    font-weight: 700;
-    margin-bottom: 2.5rem; /* Increased to push Ready to watch text down */
+    font-family: unset;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 2rem; /* Increased to push "Ready..." & Form further down */
+    margin-top: 1rem;
   }
 `;
 
@@ -101,7 +104,11 @@ const Description = styled.h3`
   color: white;
 
   @media (min-width: 960px) {
-    font-size: 1rem; /* Reduced */
+    font-size: 1rem; 
+    font-family: unset;
+    font-weight: 400;
+    line-height: 1.5;
+    color: rgb(255, 255, 255);
   }
 `;
 
@@ -112,7 +119,7 @@ const Form = styled.form`
   gap: 8px;
   width: 100%;
   max-width: 36.625rem; /* Precise width per snippet */
-  margin: 0.5rem auto 0; /* Reduced margin-top to bring closer to text */
+  margin: 1rem auto 0; /* Increased from 0.5rem to push form down (spacing "Ready to watch" up) */
   padding-top: 0; /* Removed padding to bring closer */
 
   @media (min-width: 600px) {
@@ -141,7 +148,7 @@ const GetStartedButton = styled.button`
   box-sizing: border-box; 
   min-height: 3.5rem;
   width: auto;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem; /* Reduced horizontal padding */
   font-size: 1.125rem; /* Base size */
   font-weight: 600; /* Bold per image */
   border-radius: 0.25rem; /* 4px */

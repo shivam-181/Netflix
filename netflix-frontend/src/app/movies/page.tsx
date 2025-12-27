@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useProfileStore } from '@/store/useProfileStore';
 import { useRouter } from 'next/navigation';
 import Billboard from '@/components/hero/Billboard';
 import ContentRow from '@/components/common/ContentRow';
@@ -119,6 +120,7 @@ const ToggleBtn = styled.button`
 
 export default function MoviesPage() {
   const { user, isLoading } = useAuthStore();
+  const { currentProfile } = useProfileStore();
   const router = useRouter();
   const [billboardMovie, setBillboardMovie] = useState<any>(null);
   const [showGenres, setShowGenres] = useState(false);
@@ -128,9 +130,12 @@ export default function MoviesPage() {
   const [trending, setTrending] = useState<any[]>([]);
   const [action, setAction] = useState<any[]>([]);
   const [comedy, setComedy] = useState<any[]>([]);
-  const [horror, setHorror] = useState<any[]>([]);
+  const [scary, setScary] = useState<any[]>([]);
   const [romance, setRomance] = useState<any[]>([]);
   const [topRated, setTopRated] = useState<any[]>([]);
+  const [scifi, setScifi] = useState<any[]>([]);
+  const [suspense, setSuspense] = useState<any[]>([]);
+  const [family, setFamily] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -155,15 +160,21 @@ export default function MoviesPage() {
             actionRes, 
             comedyRes, 
             horrorRes,
-            romanceRes
+            romanceRes,
+            scifiRes,
+            suspenseRes,
+            familyRes
         ] = await Promise.all([
             // Use movie specific trending if possible, usually '/trending/movie/week' in tmdb.ts or requests
-            tmdb.get('/trending/movie/week?language=en-US'), 
+            tmdb.get(requests.fetchTrendingMovies),  // Use specific Movies Today request
             tmdb.get('/movie/top_rated?language=en-US'),
             tmdb.get('/discover/movie?with_genres=28'),
             tmdb.get('/discover/movie?with_genres=35'),
             tmdb.get('/discover/movie?with_genres=27'),
             tmdb.get('/discover/movie?with_genres=10749'),
+            tmdb.get(requests.fetchSciFiHalo),
+            tmdb.get(requests.fetchSuspenseThriller),
+            tmdb.get(requests.fetchFamilyNights),
         ]);
         
         // Map and filter (basic mapping)
@@ -201,8 +212,11 @@ export default function MoviesPage() {
         setTopRated(mapRes(topRatedRes));
         setAction(mapRes(actionRes));
         setComedy(mapRes(comedyRes));
-        setHorror(mapRes(horrorRes));
+        setScary(mapRes(horrorRes));
         setRomance(mapRes(romanceRes));
+        setScifi(mapRes(scifiRes));
+        setSuspense(mapRes(suspenseRes));
+        setFamily(mapRes(familyRes));
 
         // Pick distinct billboard from filtered list
         if (filteredTrending.length > 0) {
@@ -275,12 +289,32 @@ export default function MoviesPage() {
         <Billboard movie={billboardMovie} />
 
       <ContentStack>
+        {currentProfile && currentProfile.watchHistory && currentProfile.watchHistory.length > 0 && (
+           <ContentRow 
+              title={`Continue Watching for ${currentProfile.name}`} 
+              data={currentProfile.watchHistory.map(h => ({
+                  _id: h.contentId,
+                  id: Number(h.contentId), 
+                  title: h.title || 'Resume Playing',
+                  thumbnailUrl: h.thumbnailUrl || '', 
+                  progress: h.progress,
+                  duration: `${Math.floor(h.duration / 60)}m`,
+                  description: '', 
+                  genre: 'Movie',
+                  ageRating: 'UA'
+              }))} 
+           />
+        )}
+        <ContentRow title="Top 10 Movies in India Today" data={trending.slice(0, 10)} isRanked={true} />
         <ContentRow title="Trending Now" data={trending} />
-        <ContentRow title="Top Rated Movies" data={topRated} />
+        <ContentRow title="Mind-Bending Sci-Fi" data={scifi} />
+        <ContentRow title="Suspenseful Thrillers" data={suspense} />
         <ContentRow title="Action Thrillers" data={action} />
+        <ContentRow title="Top Rated Movies" data={topRated} />
         <ContentRow title="Comedy Movies" data={comedy} />
-        <ContentRow title="Scary Movies" data={horror} />
+        <ContentRow title="Scary Movies" data={scary} />
         <ContentRow title="Romantic Favorites" data={romance} />
+        <ContentRow title="Family Movie Night" data={family} />
         <Footer />
       </ContentStack>
       <InfoModal />

@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { AiOutlineClose, AiOutlinePlus, AiOutlineCheck } from 'react-icons/ai'; 
 import { FaPlay, FaThumbsUp, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
@@ -257,6 +257,29 @@ export default function InfoModal() {
   
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [muted, setMuted] = useState(true); 
+  const playerRef = useRef<any>(null);
+
+  // Sync Mute State
+  useEffect(() => {
+    if (playerRef.current) {
+        if (muted) playerRef.current.mute();
+        else playerRef.current.unMute();
+    }
+  }, [muted]);
+
+  // Memoized Opts to prevent re-render
+  const opts = useMemo(() => ({
+    width: '100%',
+    height: '100%',
+    playerVars: {
+        autoplay: 1,
+        mute: 1, // Start muted, controlled via API
+        controls: 0,
+        loop: 1,
+        playlist: trailerKey, 
+        modestbranding: 1
+    }
+  }), [trailerKey]); 
   
   const [detailedMovie, setDetailedMovie] = useState<any>(null);
   const [credits, setCredits] = useState<any>(null);
@@ -267,6 +290,7 @@ export default function InfoModal() {
   useEffect(() => {
      if (isOpen && movie) {
          setMuted(true); 
+         playerRef.current = null;
          
          const fetchData = async () => {
              const type = movie.media_type || (movie.first_air_date ? 'tv' : 'movie');
@@ -299,6 +323,7 @@ export default function InfoModal() {
   const handleClose = useCallback(() => {
     closeModal();
     setTrailerKey(null);
+    playerRef.current = null;
   }, [closeModal]);
 
   useEffect(() => {
@@ -358,17 +383,10 @@ export default function InfoModal() {
                      <YouTube
                         videoId={trailerKey}
                         className="video-frame"
-                        opts={{
-                            width: '100%',
-                            height: '100%',
-                            playerVars: {
-                                autoplay: 1,
-                                mute: muted ? 1 : 0,
-                                controls: 0,
-                                loop: 1,
-                                playlist: trailerKey, 
-                                modestbranding: 1
-                            }
+                        opts={opts}
+                        onReady={(e) => {
+                            playerRef.current = e.target;
+                            if (muted) e.target.mute();
                         }}
                      />
                 ) : (

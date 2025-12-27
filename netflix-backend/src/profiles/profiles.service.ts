@@ -47,6 +47,19 @@ export class ProfilesService {
     return { message: 'Profile deleted successfully' };
   }
 
+  async updateProfile(profileId: string, updates: Partial<CreateProfileDto>, user: UserDocument) {
+    const profile = await this.profileModel.findOneAndUpdate(
+      { _id: profileId, userId: user._id } as any,
+      { $set: updates },
+      { new: true }
+    );
+
+    if (!profile) {
+      throw new BadRequestException('Profile not found or you do not have permission.');
+    }
+    return profile;
+  }
+
   async addToList(profileId: string, item: { id: string; type: string }, user: UserDocument) {
     const profile = await this.profileModel.findOne({ _id: profileId, userId: user._id } as any);
     if (!profile) throw new BadRequestException('Profile not found');

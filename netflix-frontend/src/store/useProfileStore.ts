@@ -26,8 +26,9 @@ interface ProfileState {
   
   fetchProfiles: () => Promise<void>;
   selectProfile: (profile: Profile) => void;
-  addProfile: (name: string, isKid?: boolean) => Promise<void>;
+  addProfile: (name: string, isKid?: boolean, avatarUrl?: string) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
+  updateProfile: (id: string, updates: Partial<Profile>) => Promise<void>;
 
   addToList: (contentId: string, type?: string) => void;
   removeFromList: (contentId: string) => void;
@@ -39,14 +40,34 @@ interface ProfileState {
 export const useProfileStore = create<ProfileState>((set, get) => ({
   profiles: [],
   currentProfile: null,
-  isLoading: false,
+  isLoading: true, // Start true to waiting for auth/profile check
   myList: [],
 
   fetchProfiles: async () => {
     set({ isLoading: true });
     try {
       const res = await api.get('/profiles');
-      set({ profiles: res.data, isLoading: false });
+      const profiles = res.data;
+      
+      // Auto-restore from localStorage if exists
+      const storedId = localStorage.getItem('currentProfileId');
+      let restoredProfile = null;
+      
+      if (storedId) {
+          restoredProfile = profiles.find((p: Profile) => p._id === storedId) || null;
+      }
+
+      set({ 
+          profiles, 
+          currentProfile: restoredProfile || get().currentProfile, // Keep existing if set, else restore
+          isLoading: false 
+      });
+      
+      // If we restored a profile, ensure its list is loaded
+      if (restoredProfile) {
+          get().selectProfile(restoredProfile);
+      }
+      
     } catch (error) {
       console.error('Failed to fetch profiles', error);
       set({ isLoading: false });
@@ -55,6 +76,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
   selectProfile: async (profile) => {
     set({ currentProfile: profile });
+    localStorage.setItem('currentProfileId', profile._id);
     localStorage.setItem('currentProfileId', profile._id);
     
     // Fetch the real list from backend
@@ -69,9 +91,9 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  addProfile: async (name, isKid = false) => {
+  addProfile: async (name, isKid = false, avatarUrl?: string) => {
     try {
-      await api.post('/profiles', { name, isKid });
+      await api.post('/profiles', { name, isKid, avatarUrl });
       // Refresh the list after adding
       await get().fetchProfiles(); 
     } catch (error) {
@@ -87,6 +109,16 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     } catch (error) {
       console.error('Failed to delete profile', error);
       throw error;
+    }
+  },
+
+  updateProfile: async (id, updates) => {
+    try {
+      await api.patch(`/profiles/${id}`, updates);
+      await get().fetchProfiles();
+    } catch (error) {
+       console.error("Failed to update profile", error);
+       throw error;
     }
   },
 

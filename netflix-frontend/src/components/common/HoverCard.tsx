@@ -10,13 +10,13 @@ import { useProfileStore } from '@/store/useProfileStore';
 import Portal from './Portal';
 
 // The placeholder keeps the space in the row
-const PlaceholderCard = styled.div<{ isLarge?: boolean }>`
+const PlaceholderCard = styled.div<{ isLarge?: boolean; isRanked?: boolean }>`
   flex: 0 0 auto;
   position: relative;
   aspect-ratio: ${props => props.isLarge ? '2 / 3' : '16 / 9'};
-  width: ${props => props.isLarge ? '120px' : '120px'};
-  @media (min-width: 600px) { width: ${props => props.isLarge ? '160px' : '160px'}; }
-  @media (min-width: 960px) { width: ${props => props.isLarge ? '200px' : '200px'}; }
+  width: ${props => props.isRanked ? '220px' : (props.isLarge ? '130px' : '130px')};
+  @media (min-width: 600px) { width: ${props => props.isRanked ? '220px' : (props.isLarge ? '180px' : '180px')}; }
+  @media (min-width: 960px) { width: ${props => props.isRanked ? '220px' : (props.isLarge ? '220px' : '220px')}; }
   cursor: pointer;
   border-radius: 4px;
 `;
@@ -153,7 +153,7 @@ const TitleText = styled.p`
   text-overflow: ellipsis;
 `;
 
-export default function HoverCard({ item, isLarge, children, bottomOffset }: { item: any; isLarge?: boolean; children?: React.ReactNode; bottomOffset?: string }) {
+export default function HoverCard({ item, isLarge, children, bottomOffset, isRanked }: { item: any; isLarge?: boolean; children?: React.ReactNode; bottomOffset?: string; isRanked?: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [logo, setLogo] = useState<string | null>(null);
@@ -290,6 +290,7 @@ export default function HoverCard({ item, isLarge, children, bottomOffset }: { i
     <>
     <PlaceholderCard
         isLarge={isLarge}
+        isRanked={isRanked}
         ref={cardRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

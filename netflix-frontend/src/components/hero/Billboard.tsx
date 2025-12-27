@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/navigation';
 import { FaPlay, FaInfoCircle, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'; 
@@ -202,6 +202,7 @@ interface Movie {
   backdropUrl?: string; 
   videoUrl?: string; 
   media_type?: 'movie' | 'tv';
+  logoUrl?: string; // Custom logo override
 }
 
 interface BillboardProps {
@@ -225,19 +226,44 @@ export default function Billboard({ movie }: BillboardProps) {
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [showVideo, setShowVideo] = useState(false);
   const [muted, setMuted] = useState(true);
-  
+
+  const playerRef = useRef<any>(null);
+
+  // Custom options for YouTube player - Stable reference
+  const opts = useMemo(() => ({
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      modestbranding: 1,
+      rel: 0,
+      loop: 0, 
+      mute: 1, // Always init muted, control via API later
+    },
+  }), []);
+
   useEffect(() => {
     if (movie && movie.id) {
         // Reset state for new movie
-        setLogoUrl(null);
+        setLogoUrl(movie.logoUrl || null);
         setTrailerKey(null);
         setShowVideo(false);
         setMuted(true);
+        // Reset player ref
+        playerRef.current = null;
 
         const fetch = async () => {
             const type = movie.media_type || 'movie'; 
             
-            // Parallel Fetch
+            // If custom logo exists, only fetch trailer
+            if (movie.logoUrl) {
+                const trailer = await fetchTrailer(type, movie.id!);
+                if (trailer) setTrailerKey(trailer.key);
+                return;
+            }
+
+            // Parallel Fetch (Logo + Trailer)
             const [logo, trailer] = await Promise.all([
                fetchLogo(type, movie.id!),
                fetchTrailer(type, movie.id!)
@@ -261,21 +287,20 @@ export default function Billboard({ movie }: BillboardProps) {
       return () => clearTimeout(timer);
   }, [trailerKey]);
 
+  // Sync Mute State with Player
+  useEffect(() => {
+    if (playerRef.current) {
+        if (muted) {
+            playerRef.current.mute();
+        } else {
+            playerRef.current.unMute();
+        }
+    }
+  }, [muted]);
+
   if (!movie) return null; 
   
-  // Custom options for YouTube player
-  const opts = {
-    height: '100%',
-    width: '100%',
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      modestbranding: 1,
-      rel: 0,
-      loop: 0, 
-      mute: muted ? 1 : 0, 
-    },
-  };
+
 
   return (
     <Container>
@@ -286,6 +311,10 @@ export default function Billboard({ movie }: BillboardProps) {
              <YouTube
                 videoId={trailerKey}
                 opts={opts}
+                onReady={(e) => {
+                    playerRef.current = e.target;
+                    if (muted) e.target.mute(); // Ensure sync on load
+                }}
                 onEnd={() => setShowVideo(false)}
                 style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100vw', height: '100vh', pointerEvents: 'none' }}
                 className="video-iframe"
@@ -296,8 +325,11 @@ export default function Billboard({ movie }: BillboardProps) {
       <InfoLayer>
         {logoUrl ? (
             <>
-              <BrandLogo src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" />
-              <LogoImage src={`https://image.tmdb.org/t/p/w500${logoUrl}`} alt={movie.title} />
+              {movie.title !== 'Stranger Things' && <BrandLogo src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix" />}
+              <LogoImage 
+                src={logoUrl.startsWith('http') ? logoUrl : `https://image.tmdb.org/t/p/w500${logoUrl}`} 
+                alt={movie.title} 
+              />
             </>
         ) : (
             <MovieTitle>{movie.title}</MovieTitle>

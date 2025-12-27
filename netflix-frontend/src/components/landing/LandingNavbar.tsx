@@ -2,6 +2,7 @@
 import styled from '@emotion/styled';
 import Link from 'next/link';
 import { ASSETS } from '@/constants/assets';
+import { MdTranslate } from 'react-icons/md';
 
 const Nav = styled.nav`
   display: flex;
@@ -43,11 +44,17 @@ const Logo = styled.img`
 const SignInButton = styled(Link)`
   background-color: var(--netflix-red);
   color: white;
-  padding: 7px 17px;
+  height: 32px; /* Explicit height match */
+  padding: 0 1rem; /* Horizontal padding only */
   border-radius: 4px;
   font-weight: 500;
   font-size: 0.9rem;
   transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none;
   &:hover { background-color: #c11119; }
 `;
 
@@ -70,6 +77,11 @@ const LanguageSelectParams = styled.div`
   /* Globe Icon placeholder/styling can go here if using svg directly, 
      but let's use a unicode globe or icon library if available. 
      User has react-icons. */
+  height: 32px; /* Explicit height match */
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Select = styled.select`
@@ -97,7 +109,7 @@ export default function LandingNavbar() {
       <Logo src={ASSETS.NETFLIX_LOGO} alt="Netflix Logo" />
       <RightContainer>
           <LanguageSelectParams>
-             <span style={{fontSize: '1.2rem', marginRight: 5}}>🌐</span> {/* Globe Icon */}
+             <MdTranslate style={{ fontSize: '1.2rem', marginRight: 5 }} />
              <Select>
                 <option>English</option>
                 <option>Hindi</option>

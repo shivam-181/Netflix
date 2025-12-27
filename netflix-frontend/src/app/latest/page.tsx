@@ -44,6 +44,10 @@ export default function LatestPage() {
 
   // Rows Data State
   const [newReleases, setNewReleases] = useState<any[]>([]);
+  const [trendingMovies, setTrendingMovies] = useState<any[]>([]);
+  const [trendingTV, setTrendingTV] = useState<any[]>([]);
+  const [newAction, setNewAction] = useState<any[]>([]);
+  const [exciting, setExciting] = useState<any[]>([]);
   const [trending, setTrending] = useState<any[]>([]);
   const [upcoming, setUpcoming] = useState<any[]>([]);
   const [topRated, setTopRated] = useState<any[]>([]);
@@ -60,12 +64,20 @@ export default function LatestPage() {
             newRes,
             trendingRes, 
             upcomingRes,
-            topRatedRes
+            topRatedRes,
+            trendingMoviesRes,
+            trendingTVRes,
+            newActionRes,
+            excitingRes
         ] = await Promise.all([
-            tmdb.get(requests.fetchNewOnNetflix || '/movie/now_playing?language=en-US'), // Fallback if custom req missing
+            tmdb.get(requests.fetchNewOnNetflix || '/movie/now_playing?language=en-US'), 
             tmdb.get(requests.fetchTrending),
             tmdb.get('/movie/upcoming?language=en-US'),
             tmdb.get('/movie/top_rated?language=en-US'),
+            tmdb.get(requests.fetchTrendingMovies),
+            tmdb.get(requests.fetchTrendingTV),
+            tmdb.get(requests.fetchNewActionMovies),
+            tmdb.get(requests.fetchExcitingSeries),
         ]);
         
         // Map and filter (basic mapping)
@@ -80,6 +92,10 @@ export default function LatestPage() {
         setTrending(mapRes(trendingRes));
         setUpcoming(mapRes(upcomingRes));
         setTopRated(mapRes(topRatedRes));
+        setTrendingMovies(mapRes(trendingMoviesRes));
+        setTrendingTV(mapRes(trendingTVRes));
+        setNewAction(mapRes(newActionRes));
+        setExciting(mapRes(excitingRes));
 
         // Use a Trending item for Billboard
         const trend = mapRes(trendingRes);
@@ -104,8 +120,12 @@ export default function LatestPage() {
         <Billboard movie={billboardMovie} />
 
       <ContentStack>
+        <ContentRow title="Top 10 Movies in India Today" data={trendingMovies.slice(0, 10)} isRanked={true} />
+        <ContentRow title="Top 10 Shows in India Today" data={trendingTV.slice(0, 10)} isRanked={true} />
         <ContentRow title="New on Netflix" data={newReleases} />
         <ContentRow title="Coming Soon" data={upcoming} />
+        <ContentRow title="New Action Movies" data={newAction} />
+        <ContentRow title="Exciting TV Shows" data={exciting} />
         <ContentRow title="Trending Now" data={trending} />
         <ContentRow title="Top Rated" data={topRated} />
         <Footer />

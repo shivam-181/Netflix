@@ -5,7 +5,7 @@ import { ASSETS } from '@/constants/assets';
 import { MdEdit, MdOutlineHelpOutline } from 'react-icons/md';
 import { BiTransfer } from 'react-icons/bi';
 import { AiOutlineUser } from 'react-icons/ai';
-import { FaCaretDown } from 'react-icons/fa';
+import { FaCaretDown, FaPencilAlt } from 'react-icons/fa';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProfileStore } from '@/store/useProfileStore';
 import Link from 'next/link';
@@ -40,7 +40,10 @@ const Logo = styled.img`
 
 const Links = styled.ul`
   display: flex;
+  align-items: center; /* Ensure vertical centering */
   gap: 20px;
+  margin: 0; /* Reset default browser margin */
+  padding: 0; /* Reset default browser padding */
   list-style: none;
   font-size: 0.9rem;
   color: #e5e5e5;
@@ -62,7 +65,7 @@ const Right = styled.div`
 const Avatar = styled.img`
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
 `;
 
@@ -148,7 +151,7 @@ const ProfileRow = styled(MenuItem)`
   img {
     width: 32px;
     height: 32px;
-    border-radius: 4px;
+    border-radius: 8px;
   }
 `;
 
@@ -167,6 +170,125 @@ const SignOutLink = styled.div`
   &:hover { text-decoration: underline; }
 `;
 
+const NotificationWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  
+  &:hover .notification-menu {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+`;
+
+const NotificationMenu = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 400px;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  cursor: default;
+  max-height: 350px;
+  overflow-y: auto;
+  border-top: 2px solid white;
+
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: black; }
+  &::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+  &::-webkit-scrollbar-thumb:hover { background: #888; }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 6px;
+    width: 0; 
+    height: 0; 
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid white;
+  }
+`;
+
+const NotificationItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: background-color 0.2s;
+  &:hover { background-color: rgba(255,255,255,0.05); }
+  &:last-child { border-bottom: none; }
+`;
+
+const NotificationImage = styled.img`
+  width: 110px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+`;
+
+const NotificationText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+`;
+
+const NotificationTitle = styled.span`
+  font-size: 0.95rem;
+  color: #dcdcdc;
+  line-height: 1.2;
+`;
+
+const NotificationSubtitle = styled.span`
+  font-size: 0.95rem;
+  color: white;
+  font-weight: 600;
+`;
+
+const NotificationTime = styled.span`
+  font-size: 0.75rem;
+  color: #808080;
+  margin-top: 2px;
+`;
+
+const MOCK_NOTIFICATIONS = [
+  {
+    id: 1,
+    title: "Reminder: It's finally here",
+    subtitle: "Watch now",
+    time: "Today",
+    image: "https://dnm.nflximg.net/api/v6/mAcAr9TxZIVbINe88xb3Teg5_OA/AAAABXfDF4ai-ybeNPenuuM-9I0496QZnUqg5QqJPlO5OMIzCmAfB5smwT2C8h4X_4b3MuyK3SzE-6_fq_tQLGQ2xYimuptuhV6HUXY9.jpg?r=27a", 
+    alt: "Stranger Things"
+  },
+  {
+    id: 2,
+    title: "New arrival",
+    subtitle: "Kota Factory",
+    time: "1 week ago",
+    image: "https://image.tmdb.org/t/p/w500/fMBookmwL6HjIgIVTjQ6EMr3pCH.jpg", 
+    alt: "Kota Factory"
+  },
+  {
+    id: 3,
+    title: "Don't miss out",
+    subtitle: "Heeramandi",
+    time: "2 weeks ago",
+    image: "https://image.tmdb.org/t/p/w500/fRhzhaWlFyypV12APz8EcMPRKa9.jpg", 
+    alt: "Heeramandi"
+  }
+];
+
 import ProfileSwitcherLoading from './ProfileSwitcherLoading';
 
 // ... (keep existing imports)
@@ -176,15 +298,24 @@ export default function Navbar() {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [switchingProfile, setSwitchingProfile] = useState<any>(null); // State for overlay
-  const { currentProfile, profiles, selectProfile } = useProfileStore();
+  const { currentProfile, profiles, selectProfile, fetchProfiles } = useProfileStore();
   const { logout } = useAuthStore();
   const router = useRouter(); 
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Load profiles on mount if empty (handle refresh)
+  useEffect(() => {
+     if (profiles.length === 0) {
+         fetchProfiles();
+     }
+  }, []);
+
   // Paths where Navbar should NOT be visible
-  const EXCLUDED_PATHS = ['/', '/auth/login', '/auth/signup', '/profiles', '/account', '/help', '/auth/logout'];
-  const shouldShow = !EXCLUDED_PATHS.includes(pathname || '') && !pathname?.startsWith('/watch');
+  const EXCLUDED_PATHS = ['/', '/auth/login', '/auth/signup', '/profiles', '/account', '/help', '/auth/logout', '/ManageProfiles'];
+  const shouldShow = !EXCLUDED_PATHS.includes(pathname || '') && !pathname?.startsWith('/watch') && !pathname?.startsWith('/settings');
+
+
 
   // Sync Search state with URL (for when we navigate or refresh on search page)
   useEffect(() => {
@@ -243,15 +374,7 @@ export default function Navbar() {
     router.push('/auth/logout');
   };
 
-  const getAvatarStyle = (index: number) => {
-    // Premium Colors: 
-    // 0: Netflix Red/Pink (Rotate 140)
-    // 1: Bright Blue (Default)
-    // 2: Golden Yellow (Rotate 60)
-    // 3: Emerald Green (Rotate -60 or -120)
-    const hueRotations = [0, 140, 60, 240]; 
-    return { filter: `hue-rotate(${hueRotations[index % 4]}deg) saturate(2.5) contrast(1.1) brightness(1.1)` };
-  };
+
 
   return (
     <>
@@ -261,25 +384,25 @@ export default function Navbar() {
       <Left>
         <Link href="/browse"><Logo src={ASSETS.NETFLIX_LOGO} alt="Logo" /></Link>
         <Links>
-          <li><Link href="/browse" style={{ fontWeight: 700, color: 'white', textDecoration: 'none' }}>Home</Link></li>
-          <li><Link href="/tv" style={{ color: 'inherit', textDecoration: 'none' }}>Shows</Link></li>
-          <li><Link href="/movies" style={{ color: 'inherit', textDecoration: 'none' }}>Movies</Link></li>
-          <li><Link href="/latest" style={{ color: 'inherit', textDecoration: 'none' }}>New & Popular</Link></li>
-          <li><Link href="/my-list" style={{ color: 'inherit', textDecoration: 'none' }}>My List</Link></li>
-          <li><Link href="/browse/languages" style={{ color: 'inherit', textDecoration: 'none' }}>Browse by Languages</Link></li>
+          <li><Link href="/browse" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/browse' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Home</Link></li>
+          <li><Link href="/tv" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/tv' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Shows</Link></li>
+          <li><Link href="/movies" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/movies' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Movies</Link></li>
+          <li><Link href="/latest" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/latest' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>New & Popular</Link></li>
+          <li><Link href="/my-list" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/my-list' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>My List</Link></li>
+          <li><Link href="/browse/languages" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/browse/languages' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Browse by Languages</Link></li>
         </Links>
       </Left>
       
       <Right>
 
-        <div style={{ display: 'flex', alignItems: 'center', border: searchVisible ? '1px solid white' : 'none', background: searchVisible ? '#141414' : 'transparent', transition: 'all 0.3s', paddingLeft: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', height: '36px', border: searchVisible ? '1px solid white' : 'none', background: searchVisible ? '#141414' : 'transparent', transition: 'all 0.3s', paddingLeft: '4px' }}>
           <svg 
              width="24" 
              height="24" 
              viewBox="0 0 24 24" 
              fill="white" 
              xmlns="http://www.w3.org/2000/svg" 
-             style={{ cursor: 'pointer', margin: '0 4px' }}
+             style={{ cursor: 'pointer', margin: '0 4px', display: 'block' }}
              onClick={() => setSearchVisible(!searchVisible)}
           >
              <path fillRule="evenodd" clipRule="evenodd" d="M16 11.586L21.707 17.293L20.293 18.707L14.586 13C13.676 13.649 12.576 14.043 11.385 14.043C7.307 14.043 4 10.899 4 7.021C4 3.143 7.307 0 11.385 0C15.464 0 18.771 3.143 18.771 7.021C18.771 8.783 18.118 10.378 17.039 11.586H16ZM11.385 2C8.528 2 6.216 4.249 6.216 7.021C6.216 9.794 8.528 12.043 11.385 12.043C14.243 12.043 16.554 9.794 16.554 7.021C16.554 4.249 14.243 2 11.385 2Z" />
@@ -295,15 +418,28 @@ export default function Navbar() {
           )}
         </div>
         
-        {/* Authentic Bell Icon */}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}>
-            <path d="M18 17H6V15L7 14V9C7 5.686 9.686 3 13 3C16.314 3 19 5.686 19 9V14L20 15V17ZM13 21C11.343 21 10 19.657 10 18H16C16 19.657 14.657 21 13 21Z" />
-        </svg>
+        {/* Authentic Bell Icon with Notification Menu */}
+        <NotificationWrapper>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer', display: 'block' }}>
+                <path d="M18 17H6V15L7 14V9C7 5.686 9.686 3 13 3C16.314 3 19 5.686 19 9V14L20 15V17ZM13 21C11.343 21 10 19.657 10 18H16C16 19.657 14.657 21 13 21Z" />
+            </svg>
+            <NotificationMenu className="notification-menu">
+                {MOCK_NOTIFICATIONS.map(note => (
+                  <NotificationItem key={note.id}>
+                    <NotificationImage src={note.image} alt={note.alt} />
+                    <NotificationText>
+                      <NotificationTitle>{note.title}</NotificationTitle>
+                      <NotificationSubtitle>{note.subtitle}</NotificationSubtitle>
+                      <NotificationTime>{note.time}</NotificationTime>
+                    </NotificationText>
+                  </NotificationItem>
+                ))}
+            </NotificationMenu>
+        </NotificationWrapper>
         
         <MenuWrapper>
            <Avatar 
                src={currentProfile?.avatarUrl || "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"} 
-               style={currentProfile ? getAvatarStyle(profiles.findIndex(p => p._id === currentProfile._id)) : {}}
            />
            <FaCaretDown 
                size={14} 
@@ -316,7 +452,6 @@ export default function Navbar() {
                    <ProfileRow key={p._id} onClick={() => handleProfileSwitch(p)}>
                        <img 
                            src={p.avatarUrl} 
-                           style={getAvatarStyle(profiles.findIndex(prof => prof._id === p._id))} 
                            alt={p.name} 
                        />
                        <span>{p.name}</span>
@@ -325,7 +460,7 @@ export default function Navbar() {
                
                {profiles.length > 1 && <MenuDivider style={{margin: '5px 0'}} />}
 
-               <MenuItem onClick={() => router.push('/profiles')}>
+               <MenuItem onClick={() => router.push('/ManageProfiles')}>
                    <MdEdit />
                    <span>Manage Profiles</span>
                </MenuItem>

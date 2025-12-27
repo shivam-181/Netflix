@@ -12,6 +12,8 @@ const tmdb = axios.create({
 
 export const requests = {
   fetchTrending: `/trending/all/week?language=en-US`,
+  fetchTrendingMovies: `/trending/movie/day?language=en-US`,
+  fetchTrendingTV: `/trending/tv/day?language=en-US`,
   fetchNetflixOriginals: `/discover/tv?with_networks=213`,
   fetchTopRated: `/movie/top_rated?language=en-US`,
   fetchActionMovies: `/discover/movie?with_genres=28`,
@@ -77,14 +79,48 @@ export const requests = {
   fetchCreatureFeatures: `/discover/movie?with_genres=27&with_keywords=13031`,
   fetchHighSchoolDrama: `/discover/movie?with_keywords=6054`,
   fetchWomenInCharge: `/discover/tv?with_keywords=17865`,
+  fetchBlockbusterMovies: `/discover/movie?sort_by=revenue.desc`,
+  fetchCriticallyAcclaimedDramas: `/discover/movie?with_genres=18&sort_by=vote_average.desc&vote_count.gte=1000`,
+  fetchAnimeSeries: `/discover/tv?with_genres=16&with_original_language=ja`,
+  fetchSciFiHalo: `/discover/movie?with_genres=878`, 
+  fetchSuspenseThriller: `/discover/movie?with_genres=53`,
+  fetchFamilyNights: `/discover/movie?with_genres=10751`,
+  fetchKoreanDramas: `/discover/tv?with_genres=18&with_original_language=ko`,
+  fetchRealityTVShows: `/discover/tv?with_genres=10764`, 
+  fetchSciFiFantasySeries: `/discover/tv?with_genres=10765`,
+  fetchNewActionMovies: `/discover/movie?with_genres=28&primary_release_date.gte=2023-01-01&sort_by=popularity.desc`,
+  fetchExcitingSeries: `/discover/tv?with_genres=10759&sort_by=popularity.desc`,
+};
+
+// Simple in-memory cache
+const cache = new Map<string, any>();
+const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+
+const getCached = (key: string) => {
+    const item = cache.get(key);
+    if (!item) return null;
+    if (Date.now() > item.expiry) {
+        cache.delete(key);
+        return null;
+    }
+    return item.value;
+};
+
+const setCache = (key: string, value: any) => {
+    cache.set(key, { value, expiry: Date.now() + CACHE_DURATION });
 };
 
 export const fetchTrailer = async (type: 'movie' | 'tv', id: number) => {
+    const key = `trailer-${type}-${id}`;
+    const cached = getCached(key);
+    if (cached) return cached;
+
     try {
         const response = await tmdb.get(`/${type}/${id}/videos`);
         const trailer = response.data.results.find(
             (vid: any) => vid.name === "Official Trailer" || vid.type === "Trailer"
         );
+        setCache(key, trailer);
         return trailer;
     } catch (error: any) {
         if (error.response && error.response.status === 404) return null;
@@ -94,10 +130,16 @@ export const fetchTrailer = async (type: 'movie' | 'tv', id: number) => {
 };
 
 export const fetchLogo = async (type: 'movie' | 'tv', id: number) => {
+    const key = `logo-${type}-${id}`;
+    const cached = getCached(key);
+    if (cached) return cached;
+
     try {
         const response = await tmdb.get(`/${type}/${id}/images`);
         const logo = response.data.logos.find((img: any) => img.iso_639_1 === 'en');
-        return logo ? logo.file_path : response.data.logos[0]?.file_path;
+        const result = logo ? logo.file_path : response.data.logos[0]?.file_path;
+        setCache(key, result);
+        return result;
     } catch (error: any) {
         if (error.response && error.response.status === 404) return null;
         console.error("Logo fetch failed", error);
@@ -106,8 +148,13 @@ export const fetchLogo = async (type: 'movie' | 'tv', id: number) => {
 };
 
 export const fetchDetails = async (type: 'movie' | 'tv', id: number) => {
+    const key = `details-${type}-${id}`;
+    const cached = getCached(key);
+    if (cached) return cached;
+
     try {
         const response = await tmdb.get(`/${type}/${id}`);
+        setCache(key, response.data);
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.status === 404) return null;
@@ -117,8 +164,13 @@ export const fetchDetails = async (type: 'movie' | 'tv', id: number) => {
 };
 
 export const fetchCredits = async (type: 'movie' | 'tv', id: number) => {
+    const key = `credits-${type}-${id}`;
+    const cached = getCached(key);
+    if (cached) return cached;
+
     try {
         const response = await tmdb.get(`/${type}/${id}/credits`);
+        setCache(key, response.data);
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.status === 404) return null;

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Patch, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { ProfilesService } from './profiles.service';
@@ -25,6 +25,7 @@ export class ProfilesController {
   }
 
   @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() body: any, @Req() req) {
     return this.profilesService.updateProfile(id, body, req.user);
   }

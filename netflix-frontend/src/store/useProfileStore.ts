@@ -114,7 +114,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
   updateProfile: async (id, updates) => {
     try {
-      await api.patch(`/profiles/${id}`, updates);
+      await api.put(`/profiles/${id}`, updates);
       await get().fetchProfiles();
     } catch (error) {
        console.error("Failed to update profile", error);

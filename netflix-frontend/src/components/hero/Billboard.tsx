@@ -303,7 +303,7 @@ export default function Billboard({ movie }: BillboardProps) {
 
 
   const backgroundSrc = movie.title === 'Stranger Things' 
-      ? '/stranger-things-bg.jpg' 
+      ? 'https://dnm.nflximg.net/api/v6/2DuQlx0fM4wd1nzqm5BFBi6ILa8/AAAAQeuvC22XZwdW_NGFcxQ3uLict32IN8V64vP8sqFWziopikZRV3v9hm09nJdQZy6FQ0FUR8IoKuPKulqLlyJpRDKqHUr1yhTMaDyugqmcMEsyNJAnej6qkYUOGlt6F4yg4IHjfuTqT7M3L0GPfDOF5bhd.jpg?r=83d' 
       : (movie.backdropUrl || movie.thumbnailUrl);
 
   return (
@@ -312,7 +312,6 @@ export default function Billboard({ movie }: BillboardProps) {
         show={!showVideo} 
         src={backgroundSrc} 
         alt={movie.title}
-        style={movie.title === 'Stranger Things' ? { transform: 'scale(1.35) translateX(150px) translateY(-60px)', objectPosition: 'center 20%' } : {}}
       />
       
       {trailerKey && (

@@ -84,6 +84,8 @@ export default function LatestPage() {
         const mapRes = (res: any) => res.data.results.map((item: any) => ({
              ...item,
              _id: item.id?.toString(),
+             title: item.title || item.name,
+             description: item.overview,
              thumbnailUrl: item.backdrop_path ? `https://image.tmdb.org/t/p/w500${item.backdrop_path}` : item.poster_path,
              media_type: item.media_type || (item.first_air_date ? 'tv' : 'movie')
         }));

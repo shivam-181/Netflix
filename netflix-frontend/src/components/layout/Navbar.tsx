@@ -384,12 +384,12 @@ export default function Navbar() {
       <Left>
         <Link href="/browse"><Logo src={ASSETS.NETFLIX_LOGO} alt="Logo" /></Link>
         <Links>
-          <li><Link href="/browse" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/browse' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Home</Link></li>
-          <li><Link href="/tv" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/tv' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Shows</Link></li>
-          <li><Link href="/movies" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/movies' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Movies</Link></li>
-          <li><Link href="/latest" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/latest' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>New & Popular</Link></li>
-          <li><Link href="/my-list" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/my-list' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>My List</Link></li>
-          <li><Link href="/browse/languages" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/browse/languages' ? { fontWeight: 900, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Browse by Languages</Link></li>
+          <li><Link href="/browse" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/browse' ? { fontWeight: 700, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Home</Link></li>
+          <li><Link href="/tv" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/tv' ? { fontWeight: 700, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Shows</Link></li>
+          <li><Link href="/movies" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/movies' ? { fontWeight: 700, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Movies</Link></li>
+          <li><Link href="/latest" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/latest' ? { fontWeight: 700, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>New & Popular</Link></li>
+          <li><Link href="/my-list" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/my-list' ? { fontWeight: 700, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>My List</Link></li>
+          <li><Link href="/browse/languages" style={{ ...{ textDecoration: 'none', transition: 'all 0.3s' }, ...(pathname === '/browse/languages' ? { fontWeight: 700, color: 'white' } : { fontWeight: 400, color: '#e5e5e5' }) }}>Browse by Languages</Link></li>
         </Links>
       </Left>
       

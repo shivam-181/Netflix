@@ -179,4 +179,20 @@ export const fetchCredits = async (type: 'movie' | 'tv', id: number) => {
     }
 };
 
+export const fetchSeasonDetails = async (tvId: number, seasonNumber: number) => {
+    const key = `season-${tvId}-${seasonNumber}`;
+    const cached = getCached(key);
+    if (cached) return cached;
+
+    try {
+        const response = await tmdb.get(`/tv/${tvId}/season/${seasonNumber}`);
+        setCache(key, response.data);
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.status === 404) return null;
+        console.error("Season details fetch failed", error);
+        return null;
+    }
+};
+
 export default tmdb;

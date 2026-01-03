@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import YouTube from 'react-youtube';
 import { fetchTrailer, fetchDetails, fetchCredits, fetchLogo } from '@/lib/tmdb';
+import EpisodesList from './EpisodesList';
 
 const Backdrop = styled(motion.div)`
   position: fixed;
@@ -451,10 +452,13 @@ export default function InfoModal() {
                           ))}
                       </div>
                   )}
+
                 </RightCol>
               </MetadataGrid>
               
-              {/* Episodes (if available and needed) can go here */}
+              {detailedMovie?.seasons && (
+                  <EpisodesList tvId={movie.id || movie._id} seasons={detailedMovie.seasons} />
+              )}
 
             </ContentLayer>
           </ModalContainer>

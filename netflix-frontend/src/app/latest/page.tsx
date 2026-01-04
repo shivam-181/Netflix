@@ -1,138 +1,83 @@
 'use client';
-
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useRouter } from 'next/navigation';
-import Billboard from '@/components/hero/Billboard'; // Optional in Latest, but usually keeps design consistent
-import ContentRow from '@/components/common/ContentRow';
-import Footer from '@/components/layout/Footer';
-import tmdb, { requests, fetchLogo } from '@/lib/tmdb';
-import InfoModal from '@/components/common/InfoModal';
+import Navbar from '@/components/layout/Navbar';
+import tmdb from '@/lib/tmdb';
+import ComingSoonItem from '@/components/latest/ComingSoonItem';
 
 const PageContainer = styled.div`
-  background-color: #141414;
-  min-height: 100vh;
-  position: relative;
+    background-color: #000;
+    min-height: 100vh;
+    padding-top: 100px; /* Navbar height */
+    display: flex;
+    justify-content: center;
 `;
 
-const ContentStack = styled.div`
-  position: relative;
-  z-index: 10;
-  margin-top: -70px; 
-  padding-bottom: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 3vw;
+const ContentWrapper = styled.div`
+    width: 100%;
+    max-width: 600px; /* Timeline usually narrow */
+    padding: 20px;
 `;
 
-const PageTitle = styled.h1`
+const Header = styled.h1`
+    color: white;
+    margin-bottom: 30px;
     font-size: 1.5rem;
-    font-weight: 500;
-    color: #e5e5e5;
-    padding: 0 4%;
-    margin-top: 100px;
-    margin-bottom: -120px; /* Pull content up */
-    position: relative;
-    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+`;
+
+const Icon = styled.div`
+    background: #e50914;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
 `;
 
 export default function LatestPage() {
-  const { user, isLoading } = useAuthStore();
-  const router = useRouter();
-  const [billboardMovie, setBillboardMovie] = useState<any>(null);
+    const [items, setItems] = useState<any[]>([]);
 
-  // Rows Data State
-  const [newReleases, setNewReleases] = useState<any[]>([]);
-  const [trendingMovies, setTrendingMovies] = useState<any[]>([]);
-  const [trendingTV, setTrendingTV] = useState<any[]>([]);
-  const [newAction, setNewAction] = useState<any[]>([]);
-  const [exciting, setExciting] = useState<any[]>([]);
-  const [trending, setTrending] = useState<any[]>([]);
-  const [upcoming, setUpcoming] = useState<any[]>([]);
-  const [topRated, setTopRated] = useState<any[]>([]);
+    useEffect(() => {
+        const fetchUpcoming = async () => {
+            try {
+                // Fetch upcoming movies
+                const res = await tmdb.get('/movie/upcoming?region=US');
+                // Could also fetch tv/on_the_air
+                if (res.data.results) {
+                    setItems(res.data.results.filter((i: any) => i.backdrop_path));
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchUpcoming();
+    }, []);
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, isLoading, router]);
-
-  useEffect(() => {
-    const fetchContent = async () => {
-        const [
-            newRes,
-            trendingRes, 
-            upcomingRes,
-            topRatedRes,
-            trendingMoviesRes,
-            trendingTVRes,
-            newActionRes,
-            excitingRes
-        ] = await Promise.all([
-            tmdb.get(requests.fetchNewOnNetflix || '/movie/now_playing?language=en-US'), 
-            tmdb.get(requests.fetchTrending),
-            tmdb.get('/movie/upcoming?language=en-US'),
-            tmdb.get('/movie/top_rated?language=en-US'),
-            tmdb.get(requests.fetchTrendingMovies),
-            tmdb.get(requests.fetchTrendingTV),
-            tmdb.get(requests.fetchNewActionMovies),
-            tmdb.get(requests.fetchExcitingSeries),
-        ]);
-        
-        // Map and filter (basic mapping)
-        const mapRes = (res: any) => res.data.results.map((item: any) => ({
-             ...item,
-             _id: item.id?.toString(),
-             title: item.title || item.name,
-             description: item.overview,
-             thumbnailUrl: item.backdrop_path ? `https://image.tmdb.org/t/p/w500${item.backdrop_path}` : item.poster_path,
-             media_type: item.media_type || (item.first_air_date ? 'tv' : 'movie')
-        }));
-
-        setNewReleases(mapRes(newRes));
-        setTrending(mapRes(trendingRes));
-        setUpcoming(mapRes(upcomingRes));
-        setTopRated(mapRes(topRatedRes));
-        setTrendingMovies(mapRes(trendingMoviesRes));
-        setTrendingTV(mapRes(trendingTVRes));
-        setNewAction(mapRes(newActionRes));
-        setExciting(mapRes(excitingRes));
-
-        // Use a Trending item for Billboard
-        const trend = mapRes(trendingRes);
-        if (trend.length > 0) {
-            const random = trend[Math.floor(Math.random() * trend.length)];
-            setBillboardMovie({
-                ...random,
-                backdropUrl: `https://image.tmdb.org/t/p/original${random.backdrop_path}`
-            });
-        }
-    };
-
-    if (user) fetchContent();
-  }, [user]);
-
-  if (isLoading || !user) return <div style={{ background: '#141414', minHeight: '100vh' }} />;
-
-  return (
-    <PageContainer>
-        
-        {/* We reuse Billboard for visual consistency, or could just start with rows */}
-        <Billboard movie={billboardMovie} />
-
-      <ContentStack>
-        <ContentRow title="Top 10 Movies in India Today" data={trendingMovies.slice(0, 10)} isRanked={true} />
-        <ContentRow title="Top 10 Shows in India Today" data={trendingTV.slice(0, 10)} isRanked={true} />
-        <ContentRow title="New on Netflix" data={newReleases} />
-        <ContentRow title="Coming Soon" data={upcoming} />
-        <ContentRow title="New Action Movies" data={newAction} />
-        <ContentRow title="Exciting TV Shows" data={exciting} />
-        <ContentRow title="Trending Now" data={trending} />
-        <ContentRow title="Top Rated" data={topRated} />
-        <Footer />
-      </ContentStack>
-      <InfoModal />
-    </PageContainer>
-  );
+    return (
+        <>
+            <Navbar />
+            <PageContainer>
+                <ContentWrapper>
+                    <Header>
+                        <Icon>🍿</Icon> 
+                        New & Hot
+                    </Header>
+                    
+                    {items.map(item => (
+                        <ComingSoonItem key={item.id} item={item} />
+                    ))}
+                    
+                    {items.length === 0 && (
+                        <div style={{ color: 'white' }}>Loading...</div>
+                    )}
+                </ContentWrapper>
+            </PageContainer>
+        </>
+    );
 }

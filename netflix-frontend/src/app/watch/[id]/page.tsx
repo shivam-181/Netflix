@@ -174,6 +174,29 @@ const SkipButton = styled.button`
   }
 `;
 
+const NextEpisodeButton = styled.button`
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  background: white;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  z-index: 20;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &:hover {
+    background: #e6e6e6;
+  }
+`;
+
 const Loading = styled.div`
   display: flex;
   justify-content: center;
@@ -285,6 +308,8 @@ export default function WatchPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [showSkip, setShowSkip] = useState(false);
+  const [showNextEpisode, setShowNextEpisode] = useState(false);
+  const [autoPlayTimer, setAutoPlayTimer] = useState<number | null>(null);
 
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -461,6 +486,10 @@ export default function WatchPage() {
     // Skip Intro Logic (Show for first 30s)
     if (curr > 0 && curr < 30) setShowSkip(true);
     else setShowSkip(false);
+
+    // Next Episode Logic (Show if within last 20s)
+    if (dur > 0 && dur - curr < 20) setShowNextEpisode(true);
+    else setShowNextEpisode(false);
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -475,6 +504,19 @@ export default function WatchPage() {
   const skipIntro = () => {
     if (!videoRef.current) return;
     videoRef.current.currentTime += 30; // Jump 30s
+  };
+
+  const handleNextEpisode = () => {
+      if (!movie || !currentEpisode) return;
+      const currentIdx = parseInt(episodeIndex || '0');
+      const nextIdx = currentIdx + 1;
+      
+      if (movie.episodes && nextIdx < movie.episodes.length) {
+          router.push(`/watch/${id}?episodeIndex=${nextIdx}&type=series`);
+      } else {
+          // Back to browse if no more
+          router.push('/browse'); 
+      }
   };
 
   const toggleMute = () => {
@@ -564,6 +606,12 @@ export default function WatchPage() {
       {/* Skip Intro Button */}
       {showSkip && showControls && (
         <SkipButton onClick={skipIntro}>Skip Intro</SkipButton>
+      )}
+
+      {showNextEpisode && showControls && (
+          <NextEpisodeButton onClick={handleNextEpisode}>
+              Next Episode
+          </NextEpisodeButton>
       )}
 
       {/* Custom Overlay */}

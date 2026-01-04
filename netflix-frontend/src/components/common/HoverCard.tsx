@@ -8,6 +8,7 @@ import { useModalStore } from '@/store/useModalStore';
 import { fetchTrailer, fetchDetails, fetchLogo } from '@/lib/tmdb';
 import { useProfileStore } from '@/store/useProfileStore';
 import Portal from './Portal';
+import YouTube from 'react-youtube';
 
 // The placeholder keeps the space in the row
 const PlaceholderCard = styled.div<{ isLarge?: boolean; isRanked?: boolean }>`
@@ -156,6 +157,7 @@ const TitleText = styled.p`
 export default function HoverCard({ item, isLarge, children, bottomOffset, isRanked }: { item: any; isLarge?: boolean; children?: React.ReactNode; bottomOffset?: string; isRanked?: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const [logo, setLogo] = useState<string | null>(null);
   const [details, setDetails] = useState<any>(null);
   const [coords, setCoords] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
@@ -187,6 +189,7 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
     if (isOpen) {
         setIsHovered(false);
         setTrailerKey(null);
+        setIsVideoReady(false);
     }
   }, [isOpen]);
 
@@ -252,6 +255,7 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
     closeTimerRef.current = setTimeout(() => {
         setIsHovered(false);
         setTrailerKey(null);
+        setIsVideoReady(false);
     }, 300);
   };
 
@@ -347,19 +351,35 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
                     onClick={() => openModal(item)}
                 >
                      <MediaWrapper>
+                       <Thumbnail src={hoverImageUrl} style={{ position: 'absolute', inset: 0, opacity: isVideoReady ? 0 : 1, transition: 'opacity 0.3s' }} />
                        {trailerKey ? (
-                           <iframe 
-                               src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=${trailerKey}`}
-                               width="100%"
-                               height="100%"
-                               style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', border: 'none', objectFit: 'cover' }}
-                               allow="autoplay; encrypted-media"
-                           />
+                           <div style={{ position: 'absolute', inset: 0, opacity: isVideoReady ? 1 : 0, transition: 'opacity 0.3s' }}>
+                               <YouTube
+                                   videoId={trailerKey}
+                                   opts={{
+                                       width: '100%',
+                                       height: '100%',
+                                       playerVars: {
+                                           autoplay: 1,
+                                           mute: 1,
+                                           controls: 0,
+                                           modestbranding: 1,
+                                           loop: 1,
+                                           playlist: trailerKey
+                                       }
+                                   }}
+                                   onReady={(e) => {
+                                       e.target.mute();
+                                       e.target.playVideo();
+                                       setIsVideoReady(true);
+                                   }}
+                                   className="video-frame"
+                                   style={{ width: '100%', height: '100%' }}
+                               />
+                           </div>
                        ) : item.videoUrl ? (
                           <VideoPreview src={item.videoUrl} autoPlay muted loop />
-                       ) : (
-                          <Thumbnail src={hoverImageUrl} />
-                       )}
+                       ) : null}
                      </MediaWrapper>
                      
                     <InfoSection>

@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import YouTube from 'react-youtube';
 import { fetchTrailer, fetchDetails, fetchCredits, fetchLogo } from '@/lib/tmdb';
 import EpisodesList from './EpisodesList';
+import MoreLikeThis from './MoreLikeThis';
 
 const Backdrop = styled(motion.div)`
   position: fixed;
@@ -459,8 +460,12 @@ export default function InfoModal() {
               {detailedMovie?.seasons && (
                   <EpisodesList tvId={movie.id || movie._id} seasons={detailedMovie.seasons} />
               )}
+              
+              <MoreLikeThis type={movie.media_type || (movie.first_air_date ? 'tv' : 'movie')} id={movie.id || movie._id} />
 
             </ContentLayer>
+
+
           </ModalContainer>
         </Backdrop>
       )}

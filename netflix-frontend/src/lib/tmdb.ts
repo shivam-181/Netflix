@@ -195,4 +195,20 @@ export const fetchSeasonDetails = async (tvId: number, seasonNumber: number) => 
     }
 };
 
+export const fetchRecommendations = async (type: 'movie' | 'tv', id: number) => {
+    const key = `recs-${type}-${id}`;
+    const cached = getCached(key);
+    if (cached) return cached;
+
+    try {
+        const response = await tmdb.get(`/${type}/${id}/recommendations`);
+        setCache(key, response.data);
+        return response.data;
+    } catch (error: any) {
+        if (error.response && error.response.status === 404) return null;
+        console.error("Recommendations fetch failed", error);
+        return null;
+    }
+};
+
 export default tmdb;

@@ -40,7 +40,9 @@ const Icon = styled.div`
     font-weight: bold;
 `;
 
-export default function LatestPage() {
+import { Suspense } from 'react';
+
+function LatestContent() {
     const [items, setItems] = useState<any[]>([]);
 
     useEffect(() => {
@@ -79,5 +81,13 @@ export default function LatestPage() {
                 </ContentWrapper>
             </PageContainer>
         </>
+    );
+}
+
+export default function LatestPage() {
+    return (
+        <Suspense fallback={<div style={{ color: 'white' }}>Loading...</div>}>
+            <LatestContent />
+        </Suspense>
     );
 }

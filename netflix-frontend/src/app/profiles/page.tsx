@@ -5,7 +5,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useProfileStore } from '@/store/useProfileStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ASSETS } from '@/constants/assets';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import IconPicker from '@/components/profiles/IconPicker';
 import { MdEdit, MdClose } from 'react-icons/md';
@@ -263,7 +263,7 @@ const ActionButton = styled.button<{ secondary?: boolean }>`
 `;
 
 
-export default function ProfilesPage() {
+function ProfilesContent() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -404,4 +404,19 @@ export default function ProfilesPage() {
       )}
     </Container>
   );
+}
+
+export default function ProfilesPage() {
+    return (
+        <Suspense fallback={<div style={{
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100vh', 
+            backgroundColor: '#141414',
+            color: 'white'
+        }}>Loading...</div>}>
+            <ProfilesContent />
+        </Suspense>
+    );
 }

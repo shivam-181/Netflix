@@ -200,8 +200,10 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
     }
     const getLogo = async () => {
         try {
+            const id = item.id || item._id;
+            if (!id) return;
             const type = item.media_type || (item.first_air_date ? 'tv' : 'movie');
-            const logoPath = await fetchLogo(type, item.id || item._id);
+            const logoPath = await fetchLogo(type, id);
             if (logoPath) setLogo(logoPath);
         } catch(e) {}
     };

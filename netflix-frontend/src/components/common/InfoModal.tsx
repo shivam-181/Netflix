@@ -123,7 +123,7 @@ const Title = styled.h2`
   font-size: 3rem;
   font-weight: 800;
   margin-bottom: 20px;
-  margin-top: -140px; 
+  margin-top: -60px; /* Reduced from -140px to prevent hiding behind buttons/overlay */ 
   position: relative;
   z-index: 10;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -246,7 +246,7 @@ const LogoImage = styled.img`
   max-height: 100px;
   object-fit: contain;
   margin-bottom: 20px;
-  margin-top: -140px; 
+  margin-top: -60px; /* Reduced from -140px */ 
   position: relative;
   z-index: 10;
   display: block;

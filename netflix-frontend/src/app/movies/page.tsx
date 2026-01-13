@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProfileStore } from '@/store/useProfileStore';
@@ -54,6 +54,17 @@ const GenreDropdownContainer = styled.div`
     position: relative;
     display: flex;
     align-items: center;
+    
+    /* Invisible hover bridge */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: 20px; /* Bridge the gap to the menu */
+        z-index: 100; /* Ensure it catches hover */
+    }
 `;
 
 const GenreButton = styled.button`
@@ -67,6 +78,7 @@ const GenreButton = styled.button`
     display: flex;
     align-items: center;
     gap: 15px;
+    
     
     &:hover { background: rgba(255,255,255,0.1); }
 `;
@@ -82,6 +94,17 @@ const GenreMenu = styled.div`
     gap: 40px;
     min-width: 450px;
     margin-top: 5px;
+    z-index: 200; /* High Z-index */
+    
+    /* Extend hit area upwards to meet the button */
+    &::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: 0;
+        width: 100%;
+        height: 20px;
+    }
 `;
 
 const GenreColumn = styled.div`
@@ -93,7 +116,7 @@ const GenreColumn = styled.div`
         color: #e5e5e5;
         font-size: 0.9rem;
         cursor: pointer;
-        &:hover { text-decoration: underline; }
+        &:hover { text-decoration: underline; color: white; }
     }
 `;
 
@@ -125,6 +148,18 @@ export default function MoviesPage() {
   const [billboardMovie, setBillboardMovie] = useState<any>(null);
   const [showGenres, setShowGenres] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const genreTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleGenreEnter = () => {
+      if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
+      setShowGenres(true);
+  };
+
+  const handleGenreLeave = () => {
+      genreTimeoutRef.current = setTimeout(() => {
+          setShowGenres(false);
+      }, 300); // 300ms forgiveness delay
+  };
 
   // Rows Data State
   const [trending, setTrending] = useState<any[]>([]);
@@ -247,36 +282,36 @@ export default function MoviesPage() {
         <SubHeader isScrolled={isScrolled}>
             <PageTitle>Movies</PageTitle>
             
-            <GenreDropdownContainer onMouseLeave={() => setShowGenres(false)}>
-                <GenreButton onMouseEnter={() => setShowGenres(true)}>
+            <GenreDropdownContainer onMouseLeave={handleGenreLeave} onMouseEnter={handleGenreEnter}>
+                <GenreButton>
                     Genres <FaCaretDown size={12} />
                 </GenreButton>
                 
                 {showGenres && (
                     <GenreMenu>
                         <GenreColumn>
-                            <span>Action</span>
-                            <span>Anime</span>
-                            <span>Classic</span>
-                            <span>Comedies</span>
-                            <span>Crime</span>
-                            <span>Cult Movies</span>
+                            <span onClick={() => console.log('Action')}>Action</span>
+                            <span onClick={() => console.log('Anime')}>Anime</span>
+                            <span onClick={() => console.log('Classic')}>Classic</span>
+                            <span onClick={() => console.log('Comedies')}>Comedies</span>
+                            <span onClick={() => console.log('Crime')}>Crime</span>
+                            <span onClick={() => console.log('Cult Movies')}>Cult Movies</span>
                         </GenreColumn>
                         <GenreColumn>
-                             <span>Documentaries</span>
-                            <span>Dramas</span>
-                            <span>Faith & Spirituality</span>
-                            <span>Horror</span>
-                            <span>Independent</span>
-                            <span>International</span>
+                             <span onClick={() => console.log('Documentaries')}>Documentaries</span>
+                            <span onClick={() => console.log('Dramas')}>Dramas</span>
+                            <span onClick={() => console.log('Faith & Spirituality')}>Faith & Spirituality</span>
+                            <span onClick={() => console.log('Horror')}>Horror</span>
+                            <span onClick={() => console.log('Independent')}>Independent</span>
+                            <span onClick={() => console.log('International')}>International</span>
                         </GenreColumn>
                          <GenreColumn>
-                            <span>Kids & Family</span>
-                            <span>Music & Musicals</span>
-                            <span>Romance</span>
-                            <span>Sci-Fi & Fantasy</span>
-                            <span>Sports</span>
-                            <span>Thrillers</span>
+                            <span onClick={() => console.log('Kids & Family')}>Kids & Family</span>
+                            <span onClick={() => console.log('Music & Musicals')}>Music & Musicals</span>
+                            <span onClick={() => console.log('Romance')}>Romance</span>
+                            <span onClick={() => console.log('Sci-Fi & Fantasy')}>Sci-Fi & Fantasy</span>
+                            <span onClick={() => console.log('Sports')}>Sports</span>
+                            <span onClick={() => console.log('Thrillers')}>Thrillers</span>
                         </GenreColumn>
                     </GenreMenu>
                 )}

@@ -178,6 +178,17 @@ const AddProfileButton = styled.button`
   &:hover { background: #dcdcdc; }
 `;
 
+const CurrentProfileBadge = styled.span`
+  background-color: #bfdbfe;
+  color: #1e3a8a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 15px;
+  white-space: nowrap;
+`;
+
 export default function ManageProfilesPage() {
   const router = useRouter();
   const { currentProfile, profiles, fetchProfiles, addProfile } = useProfileStore();
@@ -186,6 +197,7 @@ export default function ManageProfilesPage() {
   const [newProfileName, setNewProfileName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png');
 
+  // ... (keep existing handlers)
   const handleCreateProfile = async () => {
     try {
       if (!newProfileName.trim()) return;
@@ -213,6 +225,7 @@ export default function ManageProfilesPage() {
        </Header>
 
        <MainContent>
+         {/* ... (keep Sidebar) */}
          <Sidebar>
             <BackLink onClick={() => router.push('/browse')}>
                 <FaArrowLeft /> Back to Netflix
@@ -264,10 +277,17 @@ export default function ManageProfilesPage() {
                             <ProfileAvatar src={profile.avatarUrl} />
                             <RowTitle>{profile.name}</RowTitle>
                         </RowLeft>
-                        <FaChevronRight color="#ccc" />
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {currentProfile?._id === profile._id && (
+                                <CurrentProfileBadge>Your Profile</CurrentProfileBadge>
+                            )}
+                            <FaChevronRight color="#ccc" />
+                        </div>
                     </CardRow>
                 ))}
             </Card>
+            
+            {/* ... rest of component */}
 
             {profiles.length < 4 && (
                 <AddProfileButton onClick={() => setShowAddModal(true)}>Add Profile</AddProfileButton>

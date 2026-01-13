@@ -45,6 +45,7 @@ export default function Home() {
         subtitle="Save your favourites easily and always have something to watch."
         imageUrl="https://assets.nflxext.com/ffe/siteui/acquisition/ourStory/fuji/desktop/mobile-0819.jpg"
         direction="row-reverse"
+        hasDownloadAnimation
       />
       
       <FeatureRow 

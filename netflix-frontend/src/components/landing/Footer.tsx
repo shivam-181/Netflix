@@ -75,6 +75,20 @@ const BrandingText = styled.p`
   margin-top: 20px;
 `;
 
+const RecaptchaText = styled.p`
+  font-size: 0.7rem;
+  margin-top: 10px;
+  color: #8c8c8c;
+  
+  a {
+    color: #0071eb;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
 const LINKS = [
   "FAQ", "Help Centre", "Account", "Media Centre",
   "Investor Relations", "Jobs", "Ways to Watch", "Terms of Use",
@@ -105,6 +119,9 @@ export default function Footer() {
         </div>
 
         <BrandingText>Netflix India</BrandingText>
+        <RecaptchaText>
+          This page is protected by Google reCAPTCHA to ensure you're not a bot. <a href="#">Learn more.</a>
+        </RecaptchaText>
       </ContentWrapper>
     </FooterContainer>
   );

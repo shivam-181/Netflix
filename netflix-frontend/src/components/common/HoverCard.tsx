@@ -15,9 +15,9 @@ const PlaceholderCard = styled.div<{ isLarge?: boolean; isRanked?: boolean }>`
   flex: 0 0 auto;
   position: relative;
   aspect-ratio: ${props => props.isLarge ? '2 / 3' : '16 / 9'};
-  width: ${props => props.isRanked ? '220px' : (props.isLarge ? '130px' : '130px')};
-  @media (min-width: 600px) { width: ${props => props.isRanked ? '220px' : (props.isLarge ? '180px' : '180px')}; }
-  @media (min-width: 960px) { width: ${props => props.isRanked ? '220px' : (props.isLarge ? '220px' : '220px')}; }
+  width: ${props => props.isRanked ? '70px' : (props.isLarge ? '95px' : '140px')};
+  @media (min-width: 600px) { width: ${props => props.isRanked ? '90px' : (props.isLarge ? '120px' : '200px')}; }
+  @media (min-width: 960px) { width: ${props => props.isRanked ? '110px' : (props.isLarge ? '150px' : '240px')}; }
   cursor: pointer;
   border-radius: 4px;
 `;
@@ -65,8 +65,8 @@ const ActionsRow = styled.div`
 `;
 
 const IconButton = styled.button<{ primary?: boolean }>`
-  width: ${props => props.primary ? '30px' : '28px'};
-  height: ${props => props.primary ? '30px' : '28px'};
+  width: ${props => props.primary ? '42px' : '38px'};
+  height: ${props => props.primary ? '42px' : '38px'};
   border-radius: 50%;
   border: ${props => props.primary ? 'none' : '2px solid rgba(255, 255, 255, 0.5)'};
   background: ${props => props.primary ? 'white' : '#2a2a2a'};
@@ -92,8 +92,8 @@ const Metadata = styled.div`
 
 const MetaBadge = styled.span`
   border: 1px solid rgba(255,255,255,0.4);
-  padding: 1px 4px;
-  font-size: 0.7rem;
+  padding: 1px 6px;
+  font-size: 1.1rem;
   color: #ddd;
   border-radius: 2px;
   margin-right: 4px;
@@ -103,7 +103,7 @@ const MetaBadge = styled.span`
 `;
 
 const DurationText = styled.span`
-  font-size: 0.65rem;
+  font-size: 1.1rem;
   color: #a3a3a3;
   margin-right: 4px;
 `;
@@ -112,9 +112,9 @@ const TagsRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-  font-size: 0.65rem;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.95rem;
   color: #fff;
   
   & > span:not(:last-child)::after {
@@ -146,7 +146,7 @@ const TitleLogo = styled.img`
 
 const TitleText = styled.p`
   color: white;
-  font-size: 0.8rem;
+  font-size: 1.3rem;
   font-weight: 600;
   margin: 0;
   white-space: nowrap;
@@ -223,8 +223,8 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
         else if (rect.right > window.innerWidth - 100) newOrigin = 'right center';
 
         setCoords({
-            top: rect.top,
-            left: rect.left,
+            top: rect.top + window.scrollY,
+            left: rect.left + window.scrollX,
             width: rect.width,
             height: rect.height
         });
@@ -278,15 +278,28 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
     else addToList(id, type);
   };
 
-  const imageUrl = isLarge && item.poster_path
+  // Override for Stranger Things
+  let computedImageUrl = isLarge && item.poster_path
      ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
      : item.backdrop_path 
      ? `https://image.tmdb.org/t/p/w500${item.backdrop_path}` 
      : item.thumbnailUrl;
 
-  const hoverImageUrl = item.backdrop_path 
-     ? `https://image.tmdb.org/t/p/w500${item.backdrop_path}` 
-     : imageUrl;
+  if (item.title === 'Stranger Things' || item.name === 'Stranger Things') {
+      if (isLarge) {
+          computedImageUrl = 'https://occ-0-4079-3646.1.nflxso.net/dnm/api/v6/mAcAr9TxZIVbINe88xb3Teg5_OA/AAAABVGH0ApPOylN23mLKN568pwcz8SCMPEVABYN6b1MUFfmQq_WHxanD1Tk8E79ZsKTlP0BWSbt6Yw0qkL8EbIxHUQRJXf0EN2Oysm9eQgf0nh63G_ujktcHp-m_SgqJSgGx4W3ZjI3H9T1QtCkNRkTwtuQU0Z3vBNUj5vHD9KTloI.jpg?r=a6c';
+      } else {
+          computedImageUrl = 'https://occ-0-4079-3646.1.nflxso.net/dnm/api/v6/Qs00mKCpRvrkl3HZAN5KwEL1kpE/AAAABQSf0jIPXqwcT_ovNXpBjRkqG6BVTHkGSAA8weNOlaJtHZqlKHLbVJtBoWxVmnOOCZjULIVG8fm1rQH76w41QKx7UvWGUOp8gtvLFGnAVdhFa15qym5uDoFYxe9iF3qhWX2uJEN98ehCWyM_yHZSj4wYJXvqB0LrBtygU7698NT-LoZy-aJAmvs8gyXo2U1m72L36Xfrs-XGZgxuHwLFFjs8aJSt1grAst-6.jpg?r=ce8';
+      }
+  }
+
+  const imageUrl = computedImageUrl;
+
+  const hoverImageUrl = (item.title === 'Stranger Things' || item.name === 'Stranger Things')
+     ? imageUrl
+     : (item.backdrop_path 
+        ? `https://image.tmdb.org/t/p/w500${item.backdrop_path}` 
+        : imageUrl);
 
   if (imageError || !imageUrl) return null;
 
@@ -304,7 +317,7 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
             style={{ borderRadius: '4px' }} 
             onError={() => setImageError(true)}
         />
-        {!isLarge && (
+        {!isLarge && item.title !== 'Stranger Things' && item.name !== 'Stranger Things' && (
         <TitleOverlay bottomOffset={bottomOffset}>
             {logo ? (
                 <TitleLogo src={`https://image.tmdb.org/t/p/w500${logo}`} alt={item.title} />
@@ -330,14 +343,15 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
                     }}
                     animate={{ 
                         opacity: 1, 
-                        scale: 1.5,
+                        scale: 1, // Reset scale, we handle size explicitly
+                        width: 320, // Standard expanded size
+                        height: 320 / (16/9), // Match video aspect ratio exactly
                         zIndex: 9999,
-                        height: isLarge && coords ? coords.width / (16/9) : (coords?.height || 0)
                     }}
                     exit={{ opacity: 0, scale: 1 }}
                     transition={{ duration: 0.3 }}
                     style={{
-                        position: 'fixed',
+                        position: 'absolute',
                         top: coords.top, 
                         left: coords.left,
                         transformOrigin: origin, // Use the dynamically calculated origin
@@ -353,7 +367,7 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
                      <MediaWrapper>
                        <Thumbnail src={hoverImageUrl} style={{ position: 'absolute', inset: 0, opacity: isVideoReady ? 0 : 1, transition: 'opacity 0.3s' }} />
                        {trailerKey ? (
-                           <div style={{ position: 'absolute', inset: 0, opacity: isVideoReady ? 1 : 0, transition: 'opacity 0.3s' }}>
+                           <div style={{ position: 'absolute', inset: 0, opacity: isVideoReady ? 1 : 0, transition: 'opacity 0.3s', pointerEvents: 'none' }}>
                                <YouTube
                                    videoId={trailerKey}
                                    opts={{
@@ -389,16 +403,16 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
                               const type = item.media_type || (item.first_air_date || item.name ? 'tv' : 'movie');
                               router.push(`/watch/${item.id || item._id}?type=${type}`); 
                           }}>
-                              <FaPlay size={12} />
+                              <FaPlay size={20} />
                           </IconButton>
                           <IconButton onClick={toggleList}>
-                              {isAdded ? <FaCheck size={10} /> : <FaPlus size={10} />}
+                              {isAdded ? <FaCheck size={16} /> : <FaPlus size={16} />}
                           </IconButton>
                           <IconButton onClick={(e) => e.stopPropagation()}>
-                              <FaThumbsUp size={10} />
+                              <FaThumbsUp size={16} />
                           </IconButton>
                           <IconButton onClick={() => openModal(item)} style={{ marginLeft: 'auto' }}>
-                              <FaChevronDown size={10} />
+                              <FaChevronDown size={16} />
                           </IconButton>
                        </ActionsRow>
                        
@@ -408,7 +422,7 @@ export default function HoverCard({ item, isLarge, children, bottomOffset, isRan
                           <DurationText>{getDuration() || (item.first_air_date ? 'TV Series' : 'Movie')}</DurationText>
                           <MetaBadge>HD</MetaBadge>
                           
-                          <svg viewBox="0 0 50 16" width="50" height="14" style={{ color: '#e5e5e5', marginLeft: '4px' }}>
+                          <svg viewBox="0 0 50 16" width="60" height="16" style={{ color: '#e5e5e5', marginLeft: '6px' }}>
                              <g fill="currentColor">
                                 <path d="M0 8C0 9.87632 0.645949 11.6018 1.7276 12.9661L2.46553 12.3819C1.51113 11.178 0.941177 9.65557 0.941177 8C0.941177 6.42141 1.45936 4.96384 2.33491 3.78813L1.57956 3.22654C0.587274 4.55902 0 6.21093 0 8Z"></path>
                                 <path d="M16 8C16 6.21093 15.4127 4.55902 14.4204 3.22654L13.6651 3.78813C14.5406 4.96384 15.0588 6.42141 15.0588 8C15.0588 9.65557 14.4889 11.178 13.5345 12.3819L14.2724 12.9661C15.3541 11.6018 16 9.87632 16 8Z"></path>

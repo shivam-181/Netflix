@@ -115,6 +115,18 @@ const Description = styled.p`
   @media (max-width: 800px) { font-size: 1rem; }
 `;
 
+const FinaleText = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+
+   @media (max-width: 800px) {
+    font-size: 1.2rem;
+  }
+`;
+
 const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
@@ -303,7 +315,7 @@ export default function Billboard({ movie }: BillboardProps) {
 
 
   const backgroundSrc = movie.title === 'Stranger Things' 
-      ? 'https://dnm.nflximg.net/api/v6/2DuQlx0fM4wd1nzqm5BFBi6ILa8/AAAAQeuvC22XZwdW_NGFcxQ3uLict32IN8V64vP8sqFWziopikZRV3v9hm09nJdQZy6FQ0FUR8IoKuPKulqLlyJpRDKqHUr1yhTMaDyugqmcMEsyNJAnej6qkYUOGlt6F4yg4IHjfuTqT7M3L0GPfDOF5bhd.jpg?r=83d' 
+      ? 'https://occ-0-4079-3646.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABRhoH8h83T450xwgt1OGg_Ri2J_OZK9uy2A-ij9wkLISMsRDu8N8HAQqAtjch-HR6xIkyLAth2EEpCnFydEWBR9gii_z-WgWvVHv.webp?r=1e7' 
       : (movie.backdropUrl || movie.thumbnailUrl);
 
   return (
@@ -344,6 +356,7 @@ export default function Billboard({ movie }: BillboardProps) {
         )}
          
         <FadeInElement show={!showVideo}>
+            {movie.title === 'Stranger Things' && <FinaleText>Watch the Series Finale Now</FinaleText>}
             <Description>{movie.description}</Description>
         </FadeInElement>
             

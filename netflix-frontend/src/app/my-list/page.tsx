@@ -34,11 +34,12 @@ const PageTitle = styled.h1`
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 40.8px;
   margin-bottom: 50px;
   
   @media (max-width: 800px) {
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
   }
 `;
 

@@ -3,10 +3,12 @@
 import styled from '@emotion/styled';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProfileStore } from '@/store/useProfileStore';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ASSETS } from '@/constants/assets';
 import { useEffect, useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
+import IconPicker from '@/components/profiles/IconPicker';
+import { MdEdit, MdClose } from 'react-icons/md';
 
 const Container = styled.div`
   display: flex;
@@ -58,17 +60,43 @@ const ProfileItem = styled.div`
   }
 `;
 
-const Avatar = styled.img`
-  width: 10vw;
-  height: 10vw;
-  min-width: 84px;
-  min-height: 84px;
+const ProfileAvatarWrapper = styled.div`
+  position: relative;
+  width: 11vw;
+  height: 11vw;
+  min-width: 100px;
+  min-height: 100px;
   max-width: 200px;
   max-height: 200px;
+`;
+
+const Avatar = styled.img<{ isManaging?: boolean }>`
+  width: 100%;
+  height: 100%;
   border-radius: 8px;
   object-fit: cover;
   border: 3px solid transparent;
-  transition: border 0.2s;
+  transition: border 0.2s, opacity 0.2s;
+  
+  ${props => props.isManaging && `
+    opacity: 0.5;
+  `}
+`;
+
+const EditOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  border: 3px solid transparent;
+  
+  &:hover {
+    border-color: white;
+    background: rgba(0,0,0,0.4);
+  }
 `;
 
 const ProfileName = styled.span`
@@ -94,10 +122,146 @@ const ManageButton = styled.button`
   }
 `;
 
-import IconPicker from '@/components/profiles/IconPicker';
-import { MdEdit } from 'react-icons/md';
+const DoneButton = styled.button`
+  background: white;
+  border: 1px solid white;
+  color: black;
+  padding: 10px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 3rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 2px;
 
-// ... (keep styled components)
+  &:hover {
+    background: #c00; 
+    color: white;
+    border-color: #c00;
+  }
+
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+`;
+
+const ModalContent = styled.div`
+  background-color: #141414;
+  width: 100%;
+  max-width: 500px;
+  padding: 3rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Box shadow not strictly needed but good for depth if overlay is light, here it's dark */
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px;
+  
+  &:hover {
+    color: #ccc;
+  }
+`;
+
+const ModalTitle = styled.h2`
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: white;
+`;
+
+const ModalSubtitle = styled.p`
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  text-align: center;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 2rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+`;
+
+const ModalAvatar = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+`;
+
+const ModalInput = styled.input`
+  background: #666;
+  border: none;
+  border-radius: 2px;
+  padding: 10px 15px;
+  height: 40px;
+  min-width: 250px;
+  color: white;
+  font-size: 1.2rem;
+  
+  &::placeholder {
+    color: #ccc;
+  }
+
+  &:focus {
+    outline: none;
+    background: #555;
+  }
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+`;
+
+const ActionButton = styled.button<{ secondary?: boolean }>`
+  padding: 10px 30px;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border: 1px solid ${props => props.secondary ? '#808080' : 'white'};
+  background: ${props => props.secondary ? 'transparent' : 'white'};
+  color: ${props => props.secondary ? '#808080' : 'black'};
+  font-weight: ${props => props.secondary ? 'normal' : 'bold'};
+  text-transform: uppercase;
+  transition: all 0.2s;
+
+  &:hover {
+    background: ${props => props.secondary ? 'transparent' : '#c00'};
+    color: ${props => props.secondary ? 'white' : 'white'};
+    border-color: ${props => props.secondary ? 'white' : '#c00'};
+  }
+`;
+
 
 export default function ProfilesPage() {
   const router = useRouter();
@@ -106,19 +270,40 @@ export default function ProfilesPage() {
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png');
+  const [isManaging, setIsManaging] = useState(false);
+  
   const { profiles, fetchProfiles, selectProfile, addProfile } = useProfileStore();
+
+  const searchParams = useSearchParams();
+  const manageParam = searchParams.get('manage');
+
+  useEffect(() => {
+    if (manageParam === 'true') {
+      setIsManaging(true);
+    }
+  }, [manageParam]);
 
   useEffect(() => {
     fetchProfiles();
   }, [fetchProfiles]);
 
   const handleProfileClick = (profile: any) => {
+    if (isManaging) {
+      router.push(`/settings/${profile._id}`);
+      return; 
+    }
     selectProfile(profile);
     router.push('/browse');
   };
 
   const handleManageClick = () => {
-      router.push('/ManageProfiles');
+      // Toggle manage mode
+      setIsManaging(true);
+  };
+  
+  const handleDoneClick = () => {
+      setIsManaging(false);
+      router.replace('/profiles');
   };
 
   const handleCreateProfile = async () => {
@@ -136,7 +321,7 @@ export default function ProfilesPage() {
 
   return (
     <Container>
-      <Title>Who's watching?</Title>
+      <Title>{isManaging ? "Manage Profiles:" : "Who's watching?"}</Title>
       
       {showIconPicker && (
           <IconPicker 
@@ -148,7 +333,14 @@ export default function ProfilesPage() {
       <ProfileList>
         {profiles.map((profile) => (
           <ProfileItem key={profile._id} onClick={() => handleProfileClick(profile)}>
-            <Avatar src={profile.avatarUrl} alt={profile.name} />
+            <ProfileAvatarWrapper>
+              <Avatar src={profile.avatarUrl} alt={profile.name} isManaging={isManaging} />
+              {isManaging && (
+                <EditOverlay>
+                  <MdEdit size={32} color="white" />
+                </EditOverlay>
+              )}
+            </ProfileAvatarWrapper>
             <ProfileName>{profile.name}</ProfileName>
           </ProfileItem>
         ))}
@@ -156,7 +348,7 @@ export default function ProfilesPage() {
         {profiles.length < 4 && (
             <ProfileItem onClick={() => setShowAddModal(true)}>
             <div style={{ 
-                width: '10vw', height: '10vw', minWidth: 84, minHeight: 84, maxWidth: 200, maxHeight: 200,
+                width: '12vw', height: '12vw', minWidth: 100, minHeight: 100, maxWidth: 200, maxHeight: 200,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent',
                 borderRadius: '4px'
@@ -168,68 +360,47 @@ export default function ProfilesPage() {
         )}
       </ProfileList>
 
-      <ManageButton onClick={handleManageClick}>
-        MANAGE PROFILES
-      </ManageButton>
+      {isManaging ? (
+        <DoneButton onClick={handleDoneClick}>
+          Done
+        </DoneButton>
+      ) : (
+        <ManageButton onClick={handleManageClick}>
+          MANAGE PROFILES
+        </ManageButton>
+      )}
 
-      {/* Simple Add Profile Modal */}
       {showAddModal && (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-            background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2500
-        }}>
-            <div style={{ background: '#141414', padding: '40px', borderRadius: '4px', border: '1px solid #333', width: '400px', maxWidth: '90%' }}>
-                <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>Add Profile</h2>
+        <ModalOverlay onClick={() => setShowAddModal(false)}>
+            <ModalContent onClick={e => e.stopPropagation()}>
+                <CloseButton onClick={() => setShowAddModal(false)}>
+                    <MdClose size={40} />
+                </CloseButton>
+
+                <ModalTitle>Add a profile</ModalTitle>
+                <ModalSubtitle>Add a profile for another person watching Netflix.</ModalSubtitle>
                 
-                <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
-                    <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowIconPicker(true)}>
-                        <img 
-                            src={selectedIcon} 
-                            style={{ width: '80px', height: '80px', borderRadius: '4px' }} 
-                            alt="Profile" 
-                        />
-                        <div style={{
-                            position: 'absolute', bottom: 0, left: 0, right: 0,
-                            background: 'rgba(0,0,0,0.6)', padding: '2px', textAlign: 'center'
-                        }}>
-                             <MdEdit color="white" />
-                        </div>
-                    </div>
-                    
-                    <input 
+                <InputGroup>
+                    <ModalAvatar src={selectedIcon} alt="New Profile" />
+                    <ModalInput 
                         type="text" 
                         placeholder="Name" 
                         value={newProfileName}
                         onChange={(e) => setNewProfileName(e.target.value)}
-                        style={{ 
-                            flex: 1, padding: '10px', fontSize: '1.2rem', background: '#333', 
-                            border: 'none', color: 'white', outline: 'none'
-                        }}
+                        autoFocus
                     />
-                </div>
+                </InputGroup>
 
-                <div style={{ display: 'flex', gap: '15px' }}>
-                    <button 
-                        onClick={handleCreateProfile}
-                        style={{ 
-                            background: 'white', color: 'black', padding: '10px 20px', 
-                            fontSize: '1.1rem', fontWeight: 'bold', border: 'none', cursor: 'pointer' 
-                        }}
-                    >
+                <ModalActions>
+                    <ActionButton onClick={handleCreateProfile}>
                         Continue
-                    </button>
-                    <button 
-                        onClick={() => setShowAddModal(false)}
-                        style={{ 
-                            background: 'transparent', color: '#808080', padding: '10px 20px', 
-                            fontSize: '1.1rem', border: '1px solid #808080', cursor: 'pointer' 
-                        }}
-                    >
+                    </ActionButton>
+                    <ActionButton secondary onClick={() => setShowAddModal(false)}>
                         Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
+                    </ActionButton>
+                </ModalActions>
+            </ModalContent>
+        </ModalOverlay>
       )}
     </Container>
   );

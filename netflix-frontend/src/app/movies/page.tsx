@@ -25,7 +25,7 @@ const ContentStack = styled.div`
   padding-bottom: 50px;
   display: flex;
   flex-direction: column;
-  gap: 3vw;
+  gap: 2vw;
 `;
 
 // Sub-Header for Movies Page

@@ -209,7 +209,7 @@ export default function ProfileSettingsPage() {
                    <FaChevronRight color="#ccc" />
                </CardRow>
 
-               <CardRow>
+               <CardRow onClick={() => router.push(`/settings/${targetProfile._id}/lock`)}>
                    <RowLeft>
                         <div style={{ width: 60, display: 'flex', justifyContent: 'center' }}>
                            <BiLockAlt size={28} color="#666" />

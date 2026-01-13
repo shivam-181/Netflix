@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useProfileStore } from '@/store/useProfileStore';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import NotificationDropdown from './NotificationDropdown';
 
 const Nav = styled.nav<{ isScrolled: boolean }>`
   position: fixed;
@@ -111,9 +112,9 @@ const MenuWrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  height: 32px; /* Fixed height for alignment */
   gap: 10px;
   cursor: pointer;
-  padding: 10px 0;
   
   &:hover .profile-menu {
     display: flex;
@@ -121,6 +122,17 @@ const MenuWrapper = styled.div`
 
   &:hover .caret {
     transform: rotate(180deg);
+  }
+
+  /* Hover Bridge */
+  &::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: transparent;
   }
 `;
 
@@ -174,120 +186,28 @@ const NotificationWrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  height: 32px; /* Fixed height for alignment */
   cursor: pointer;
   
   &:hover .notification-menu {
-    display: block;
+    display: flex;
     opacity: 1;
     pointer-events: auto;
   }
-`;
 
-const NotificationMenu = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 0;
-  width: 400px;
-  background-color: rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  display: none;
-  flex-direction: column;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-  cursor: default;
-  max-height: 350px;
-  overflow-y: auto;
-  border-top: 2px solid white;
-
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: black; }
-  &::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-  &::-webkit-scrollbar-thumb:hover { background: #888; }
-
-  &::before {
+  /* Robust Hover Bridge */
+  &::after {
     content: '';
     position: absolute;
-    top: -6px;
-    right: 6px;
-    width: 0; 
-    height: 0; 
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid white;
+    bottom: -20px;
+    left: -20px;
+    right: -20px;
+    height: 30px;
+    background: transparent;
   }
 `;
 
-const NotificationItem = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
-  padding: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  transition: background-color 0.2s;
-  &:hover { background-color: rgba(255,255,255,0.05); }
-  &:last-child { border-bottom: none; }
-`;
 
-const NotificationImage = styled.img`
-  width: 110px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-`;
-
-const NotificationText = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-`;
-
-const NotificationTitle = styled.span`
-  font-size: 0.95rem;
-  color: #dcdcdc;
-  line-height: 1.2;
-`;
-
-const NotificationSubtitle = styled.span`
-  font-size: 0.95rem;
-  color: white;
-  font-weight: 600;
-`;
-
-const NotificationTime = styled.span`
-  font-size: 0.75rem;
-  color: #808080;
-  margin-top: 2px;
-`;
-
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 1,
-    title: "Reminder: It's finally here",
-    subtitle: "Watch now",
-    time: "Today",
-    image: "https://dnm.nflximg.net/api/v6/mAcAr9TxZIVbINe88xb3Teg5_OA/AAAABXfDF4ai-ybeNPenuuM-9I0496QZnUqg5QqJPlO5OMIzCmAfB5smwT2C8h4X_4b3MuyK3SzE-6_fq_tQLGQ2xYimuptuhV6HUXY9.jpg?r=27a", 
-    alt: "Stranger Things"
-  },
-  {
-    id: 2,
-    title: "New arrival",
-    subtitle: "Kota Factory",
-    time: "1 week ago",
-    image: "https://image.tmdb.org/t/p/w500/fMBookmwL6HjIgIVTjQ6EMr3pCH.jpg", 
-    alt: "Kota Factory"
-  },
-  {
-    id: 3,
-    title: "Don't miss out",
-    subtitle: "Heeramandi",
-    time: "2 weeks ago",
-    image: "https://image.tmdb.org/t/p/w500/fRhzhaWlFyypV12APz8EcMPRKa9.jpg", 
-    alt: "Heeramandi"
-  }
-];
 
 import ProfileSwitcherLoading from './ProfileSwitcherLoading';
 
@@ -395,7 +315,7 @@ export default function Navbar() {
       
       <Right>
 
-        <div style={{ display: 'flex', alignItems: 'center', height: '36px', border: searchVisible ? '1px solid white' : 'none', background: searchVisible ? '#141414' : 'transparent', transition: 'all 0.3s', paddingLeft: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', height: '32px', border: searchVisible ? '1px solid white' : 'none', background: searchVisible ? '#141414' : 'transparent', transition: 'all 0.3s', paddingLeft: '4px' }}>
           <svg 
              width="24" 
              height="24" 
@@ -423,18 +343,7 @@ export default function Navbar() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer', display: 'block' }}>
                 <path d="M18 17H6V15L7 14V9C7 5.686 9.686 3 13 3C16.314 3 19 5.686 19 9V14L20 15V17ZM13 21C11.343 21 10 19.657 10 18H16C16 19.657 14.657 21 13 21Z" />
             </svg>
-            <NotificationMenu className="notification-menu">
-                {MOCK_NOTIFICATIONS.map(note => (
-                  <NotificationItem key={note.id}>
-                    <NotificationImage src={note.image} alt={note.alt} />
-                    <NotificationText>
-                      <NotificationTitle>{note.title}</NotificationTitle>
-                      <NotificationSubtitle>{note.subtitle}</NotificationSubtitle>
-                      <NotificationTime>{note.time}</NotificationTime>
-                    </NotificationText>
-                  </NotificationItem>
-                ))}
-            </NotificationMenu>
+            <NotificationDropdown />
         </NotificationWrapper>
         
         <MenuWrapper>

@@ -277,7 +277,7 @@ export default function EditProfilePage() {
   const handleSave = async () => {
       if (targetProfile && name) {
           await updateProfile(targetProfile._id, { name });
-          router.push(`/settings/${targetProfile._id}`);
+          router.push('/profiles?manage=true');
       }
   };
   

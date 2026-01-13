@@ -13,6 +13,7 @@ const HeroContainer = styled.div`
   background-position: center 40%; /* Kept the slight upward shift */
   background-repeat: no-repeat;
   background-color: #000;
+  font-family: 'Google Sans Flex', sans-serif;
   
   /* The dark overlay logic */
   &::after {
@@ -57,13 +58,7 @@ const Title = styled.h1`
   }
 
   @media (min-width: 960px) {
-    font-size: 2.5rem;
-    font-weight: 700;
-  }
-
-  @media (min-width: 1280px) {
-    font-family: unset;
-    font-size: 3.5rem; /* Increased from 3rem */
+    font-size: 3.2rem;
     font-weight: 900;
     margin-bottom: 0.75rem; 
   }
@@ -87,7 +82,6 @@ const Subtitle = styled.p`
   }
 
   @media (min-width: 1280px) {
-    font-family: unset;
     font-size: 1.25rem;
     font-weight: 500;
     margin-bottom: 2rem; /* Increased to push "Ready..." & Form further down */
@@ -105,7 +99,6 @@ const Description = styled.h3`
 
   @media (min-width: 960px) {
     font-size: 1rem; 
-    font-family: unset;
     font-weight: 400;
     line-height: 1.5;
     color: rgb(255, 255, 255);
@@ -138,6 +131,7 @@ const Input = styled.input`
   background: rgba(22, 22, 22, 0.7); /* Darker translucent */
   color: white;
   font-size: 1rem;
+  font-family: inherit;
   
   &::placeholder {
     color: #b3b3b3;
@@ -152,8 +146,10 @@ const GetStartedButton = styled.button`
   font-size: 1.125rem; /* Base size */
   font-weight: 600; /* Bold per image */
   border-radius: 0.25rem; /* 4px */
+  border-radius: 0.25rem; /* 4px */
   background: #e50914; /* TrendingModal Red */
   color: white; 
+  font-family: inherit;
   border: 0;
   cursor: pointer;
   display: inline-flex;

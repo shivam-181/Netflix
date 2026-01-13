@@ -45,8 +45,7 @@ const MoreToExplore = styled.div`
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
-  gap: 0.5px;
-  grid-row-gap: 0.5px;
+  gap: 40.8px;
   padding-bottom: 20px;
 `;
 
@@ -377,56 +376,12 @@ function SearchContent() {
         <Grid>
           {results
             .filter(item => item.backdropUrl || item.thumbnailUrl) // Ensure image exists
-            .map((item, idx) => {
-             const badge = getBadge(idx);
-             return (
+            .map((item, idx) => (
                  <HoverCard 
                     key={item._id || idx} 
                     item={item} 
-                    bottomOffset={
-                        (badge?.type === 'NEW_SEASON' || 
-                         badge?.type === 'LIVE' || 
-                         badge?.type === 'NEW_EPISODE' || 
-                         badge?.type === 'RECENTLY_ADDED' || 
-                         badge?.type === 'LEAVING_SOON') 
-                        ? '32px' : '0'
-                    }
-                 >
-                    {badge?.type === 'TOP_10' && (
-                        <TopBadge>
-                            <span>TOP</span>
-                            <span>10</span>
-                        </TopBadge>
-                    )}
-
-                    {badge?.type === 'RECENTLY_ADDED' && (
-                        <LabelBadge color="#db0000">Recently Added</LabelBadge>
-                    )}
-
-                    {badge?.type === 'LEAVING_SOON' && (
-                        <LabelBadge color="#e50914">Leaving Soon</LabelBadge>
-                    )}
-
-                    {badge?.type === 'NEW_SEASON' && (
-                        <BottomBadge>New Season</BottomBadge>
-                    )}
-
-                    {badge?.type === 'LIVE' && (
-                        <LiveBadgeContainer>
-                            <LiveRed>Live</LiveRed>
-                            <LiveDate>{badge.date}</LiveDate>
-                        </LiveBadgeContainer>
-                    )}
-
-                    {badge?.type === 'NEW_EPISODE' && (
-                        <NewEpisodeContainer>
-                            <NewEpBadge>New Episode</NewEpBadge>
-                            <WatchNowBadge>Watch Now</WatchNowBadge>
-                        </NewEpisodeContainer>
-                    )}
-                 </HoverCard>
-             );
-          })}
+                 />
+            ))}
         </Grid>
       </Container>
       <Footer />

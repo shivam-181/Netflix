@@ -100,7 +100,7 @@ const DropdownItem = styled.li`
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 40.8px;
   margin-top: 30px;
 `;
 
@@ -318,7 +318,7 @@ export default function BrowseLanguagesPage() {
         <ContentArea>
             <Grid>
                 {content.map((item) => (
-                    <div key={item._id}>
+                    <div key={item._id} style={{ position: 'relative', aspectRatio: '1.4' }}>
                         <HoverCard item={item} />
                     </div>
                 ))}

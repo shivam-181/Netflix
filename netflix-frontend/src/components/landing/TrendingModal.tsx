@@ -1,7 +1,8 @@
 'use client';
 import styled from '@emotion/styled';
 import { useEffect } from 'react';
-import { FaTimes } from 'react-icons/fa';
+/* import { FaTimes } from 'react-icons/fa'; Removed for custom SVG */
+import MoreLikeThis from '@/components/common/MoreLikeThis';
 
 
 interface TrendingModalProps {
@@ -25,13 +26,37 @@ const Backdrop = styled.div`
 
 const ModalContainer = styled.div`
   width: 100%;
-  max-width: 850px;
+  max-width: 700px; /* Reduced from 850px */
+  max-height: 90vh; /* Limit height to viewport */
+  overflow-y: auto; /* Allow vertical scrolling */
+  overflow-x: hidden;
   background: #181818;
   border-radius: 6px;
-  overflow: hidden;
+  /* overflow: hidden; Removed to allow scroll */
   position: relative;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   animation: fadeIn 0.3s ease-out;
+
+  /* Custom Scrollbar Styles */
+  &::-webkit-scrollbar {
+    width: 30px;
+    display: block;
+  }
+  &::-webkit-scrollbar-track {
+    background: white; 
+    border-radius: 4px;
+    margin: 6px 0; /* Add some spacing top/bottom */
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #8e8e8e; /* Gray thumb */
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  /* Firefox Scrollbar */
+  scrollbar-width: thick;
+  scrollbar-color: #8e8e8e white;
 
   @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
@@ -40,7 +65,7 @@ const ModalContainer = styled.div`
 `;
 
 const HeroSection = styled.div<{ bgUrl: string }>`
-  height: 480px;
+  height: 400px; /* Reduced to move info up */
   background-image: linear-gradient(to top, #181818, transparent 50%),
                     url(${props => props.bgUrl});
   background-size: cover;
@@ -49,19 +74,24 @@ const HeroSection = styled.div<{ bgUrl: string }>`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 40px 50px;
+  padding: 40px 50px 20px 50px; /* Padding for the Title/Logo */
+`;
+
+const InfoSection = styled.div`
+  padding: 10px 50px 40px 50px;
+  background: #181818;
 `;
 
 const CloseButton = styled.button`
   position: absolute;
   top: 20px;
   right: 20px;
-  background: #181818;
+  background: transparent; /* Removed circle bg */
   border: none;
   color: white;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  /* border-radius: 50%; Removed circle */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +99,8 @@ const CloseButton = styled.button`
   z-index: 10;
   
   &:hover {
-    background: #333;
+    background: transparent;
+    transform: scale(1.1);
   }
 `;
 
@@ -100,25 +131,22 @@ const MetaRow = styled.div`
 `;
 
 const Badge = styled.span`
-  background: #333;
-  color: #fff;
+  background: #404040; /* Darker gray background for all */
+  color: #dcdcdc;
   padding: 4px 8px;
   font-size: 0.9rem;
-  border-radius: 2px;
-  font-weight: 500;
+  border-radius: 4px;
+  font-weight: 400;
+  border: 1px solid transparent; /* Ensure consistent box model */
   
+  /* Removed specific overrides to make them look uniform like the image */
   &.year {
-    background: transparent;
-    padding: 0;
-    color: #ccc;
-    font-weight: bold;
+    color: #dcdcdc;
+    font-weight: 400;
   }
   
   &.maturity {
-    border: 1px solid #888;
-    background: transparent;
-    color: #fff;
-    padding: 2px 6px;
+    border: 1px solid transparent; 
   }
 `;
 
@@ -132,6 +160,7 @@ const Description = styled.p`
 
 const GetStartedButton = styled.a`
   display: inline-flex;
+  align-self: flex-start; /* Prevent stretching */
   align-items: center;
   gap: 10px;
   background-color: #e50914;
@@ -166,7 +195,9 @@ export default function TrendingModal({ item, onClose }: TrendingModalProps) {
       <ModalContainer onClick={e => e.stopPropagation()}>
         <HeroSection bgUrl={item.backdropUrl || item.img}>
           <CloseButton onClick={onClose}>
-            <FaTimes size={24} />
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 6L18 18M6 18L18 6" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </CloseButton>
           
           <LogoOrTitle>
@@ -176,11 +207,16 @@ export default function TrendingModal({ item, onClose }: TrendingModalProps) {
               <TitleText>{item.title}</TitleText>
             )}
           </LogoOrTitle>
+        </HeroSection>
 
+        <InfoSection>
           <MetaRow>
             <Badge className="year">{item.year || '2025'}</Badge>
             <Badge className="maturity">{item.maturity || 'U/A 16+'}</Badge>
-            {metaList.map((g: string, i: number) => (
+            {item.media_type && <Badge>{item.media_type}</Badge>}
+            <Badge>HD</Badge>
+            <Badge>5.1</Badge>
+            {metaList && metaList.length > 0 && metaList.map((g: string, i: number) => (
               <Badge key={i}>{g}</Badge>
             ))}
           </MetaRow>
@@ -195,8 +231,13 @@ export default function TrendingModal({ item, onClose }: TrendingModalProps) {
                 <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </GetStartedButton>
+        </InfoSection>
 
-        </HeroSection>
+        {/* More Like This Section */}
+        <MoreLikeThis 
+            type={item.media_type === 'movie' ? 'movie' : 'tv'} 
+            id={item.id} 
+        />
       </ModalContainer>
     </Backdrop>
   );

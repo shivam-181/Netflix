@@ -1,9 +1,10 @@
 'use client';
+import { useRef, useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import HoverCard from './HoverCard';
 
 const RowContainer = styled.div`
-  margin-bottom: 5px;
+  margin-bottom: 10px; 
   padding-left: 4%;
   
   /* Ensure z-index layering */
@@ -12,23 +13,41 @@ const RowContainer = styled.div`
   &:hover { z-index: 2; } /* Bring row to front when interacting */
 `;
 
+const ExploreText = styled.div<{ visible: boolean }>`
+  display: flex; 
+  align-items: baseline;
+  font-size: 0.9vw;
+  font-weight: 600;
+  color: #54b9c5;
+  opacity: ${props => props.visible ? 1 : 0};
+  max-width: ${props => props.visible ? '200px' : '0'};
+  overflow: hidden; 
+  transform: ${props => props.visible ? 'translate(0)' : 'translateX(-20px)'};
+  transition: all 0.4s ease-in-out;
+  white-space: nowrap;
+  vertical-align: bottom;
+  
+  @media (max-width: 500px) { display: none; }
+`;
+
+const Chevron = styled.span<{ visible: boolean }>`
+  color: #54b9c5; 
+  font-size: 1vw;
+  font-weight: bold;
+  margin-left: 5px;
+  display: inline-block; 
+  opacity: ${props => props.visible ? 1 : 0};
+  transform: ${props => props.visible ? 'translateX(0)' : 'translateX(-10px)'};
+  transition: all 0.3s;
+`;
+
 const Header = styled.div`
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   cursor: pointer;
   width: fit-content;
-
-  &:hover .explore-text {
-    max-width: 200px;
-    opacity: 1;
-    transform: translate(0);
-  }
-  
-  &:hover .chevron {
-     color: #54b9c5;
-  }
 `;
 
 const Title = styled.h2`
@@ -37,7 +56,7 @@ const Title = styled.h2`
   font-size: 1.4vw;
   line-height: 1.25vw;
   vertical-align: bottom;
-  font-weight: 700; /* Bold as requested */
+  font-weight: 700; 
   transition: color 0.3s;
   
   .group:hover & {
@@ -47,51 +66,17 @@ const Title = styled.h2`
   @media (max-width: 800px) { font-size: 1.2rem; }
 `;
 
-const ExploreText = styled.div`
-  display: flex; /* alignment */
-  align-items: baseline;
-  font-size: 0.9vw;
-  font-weight: 600;
-  color: #54b9c5;
-  opacity: 0;
-  max-width: 0;
-  transform: translateX(-10px);
-  transition: all 0.3s ease-in-out;
-  white-space: nowrap;
-  vertical-align: bottom;
-  
-  @media (max-width: 800px) { display: none; }
-`;
-
-const Chevron = styled.span`
-  color: #54b9c5; /* Always green/cyan as requested? Or only on hover? Images imply cyan. */
-  font-size: 1vw;
-  font-weight: bold;
-  margin-left: 5px;
-  display: inline-block; /* allows transform if needed */
-  opacity: 0;
-  transition: all 0.3s;
-  transform: translateX(-10px);
-
-  .group:hover & {
-      opacity: 1;
-      transform: translateX(0);
-  }
-`;
 
 const ScrollContainer = styled.div`
   display: flex;
   overflow-x: scroll; 
-  overflow-y: visible; /* CRITICAL: Allow cards to scale vertically outside */
+  overflow-y: visible; 
   gap: 10px;
-  padding: 30px 0; /* Huge padding to allow large hover expansion */
-  margin-top: -10px; /* Offset the padding visually */
+  padding: 50px 0; 
+  margin-top: -45px; /* Reduced gap */
+  margin-bottom: -40px; 
   scroll-behavior: smooth;
 
-  /* Hide Scrollbar */
-  &::-webkit-scrollbar { display: none; }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
   /* Hide Scrollbar */
   &::-webkit-scrollbar { display: none; }
   -ms-overflow-style: none;
@@ -100,23 +85,59 @@ const ScrollContainer = styled.div`
 
 const RankedWrapper = styled.div`
   display: flex;
-  align-items: flex-end; /* Align to bottom usually looks best, or center */
+  align-items: flex-end; 
   position: relative;
-  margin-right: 50px; 
+  margin-right: 10px; 
 `;
 
 const RankSvg = styled.svg`
-  width: 140px;
-  height: 330px; /* Match large card height (220px * 1.5) */
-  /* Remove absolute */
-  fill: #141414;
+  width: 70px;
+  height: 105px;
+  @media (min-width: 600px) { 
+    width: 90px;
+    height: 135px; 
+  }
+  @media (min-width: 960px) { 
+    width: 110px;
+    height: 165px; 
+  }
+  fill: #000000;
   stroke: #595959;
   stroke-width: 4px;
-  margin-right: -10px; /* Slight visual connection */
+  margin-right: -30px; /* Balanced overlap */
   flex-shrink: 0;
+  z-index: 0;
 `;
 
-// Removed Card/Thumbnail components as they are moved to HoverCard
+const SliderArrow = styled.div<{ direction: 'left' | 'right' }>`
+  position: absolute;
+  top: 50px;
+  bottom: 50px;
+  ${props => props.direction === 'left' ? 'left: 0;' : 'right: 0;'}
+  width: 50px; /* Reduced from default usually 4%, simplified px */
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+  border-radius: 4px; /* Soft edges */
+  
+  .group:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(0,0,0,0.7);
+    transform: scale(1.05); /* Slight pop */
+  }
+
+  @media (min-width: 768px) { width: 60px; }
+`;
+
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface ContentItem {
   _id: string;
@@ -136,34 +157,90 @@ interface ContentRowProps {
   isRanked?: boolean;
 }
 
-// Update functional component to use Header
 export default function ContentRow({ title, data, isLargeRow, isRanked }: ContentRowProps) {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [isMoved, setIsMoved] = useState(false);
+  const [isEnd, setIsEnd] = useState(false);
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+
+  const handleScroll = () => {
+    if (rowRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = rowRef.current;
+      setIsMoved(scrollLeft > 0);
+      setIsEnd(Math.ceil(scrollLeft + clientWidth) >= scrollWidth);
+    }
+  };
+
+  useEffect(() => {
+     handleScroll(); // Check initially
+     // Add listener
+     const row = rowRef.current;
+     if(row) {
+        row.addEventListener('scroll', handleScroll);
+        // Also verify resizing
+        window.addEventListener('resize', handleScroll);
+        return () => {
+            row.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleScroll);
+        };
+     }
+  }, [data]);
+
+  const handleClick = (direction: 'left' | 'right') => {
+    if (rowRef.current) {
+      const { clientWidth } = rowRef.current;
+      const scrollTo = direction === 'left' 
+        ? rowRef.current.scrollLeft - clientWidth 
+        : rowRef.current.scrollLeft + clientWidth;
+      
+      rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
+
   if (!data || data.length === 0) return null;
 
   return (
-    <RowContainer>
-      <Header className="group">
+    <RowContainer className="group">
+      <Header 
+        onMouseEnter={() => setIsHeaderHovered(true)}
+        onMouseLeave={() => setIsHeaderHovered(false)}
+      >
           <Title>{title}</Title>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <ExploreText className="explore-text">Explore All</ExploreText>
-            <Chevron className="chevron">{'>'}</Chevron>
+            <ExploreText visible={isHeaderHovered}>Explore All</ExploreText>
+            <Chevron visible={isHeaderHovered}>{'>'}</Chevron>
           </div>
       </Header>
-      <ScrollContainer>
-        {data.map((item, index) => {
-           if (isRanked) {
-             return (
-               <RankedWrapper key={item._id}>
-                  <RankSvg viewBox="0 0 140 330">
-                     <text x="50%" y="280" textAnchor="middle" fontSize="280" fontWeight="900" letterSpacing="-10">{index + 1}</text>
-                  </RankSvg>
-                  <HoverCard item={item} isLarge={true} isRanked={true} />
-               </RankedWrapper>
-             );
-           }
-           return <HoverCard key={item._id} item={item} isLarge={isLargeRow} />;
-        })}
-      </ScrollContainer>
+      
+      <div style={{ position: 'relative' }}> 
+          {isMoved && (
+            <SliderArrow direction="left" onClick={() => handleClick('left')}>
+                <FaChevronLeft size={30} color="white" />
+            </SliderArrow>
+          )}
+
+          <ScrollContainer ref={rowRef}>
+            {data.map((item, index) => {
+              if (isRanked) {
+                return (
+                  <RankedWrapper key={item._id}>
+                      <RankSvg viewBox="0 0 140 280">
+                        <text x="50%" y="270" textAnchor="middle" fontSize="280" fontWeight="900" letterSpacing="-10">{index + 1}</text>
+                      </RankSvg>
+                      <HoverCard item={item} isLarge={true} isRanked={true} />
+                  </RankedWrapper>
+                );
+              }
+              return <HoverCard key={item._id} item={item} isLarge={isLargeRow} />;
+            })}
+          </ScrollContainer>
+
+          {!isEnd && (
+            <SliderArrow direction="right" onClick={() => handleClick('right')}>
+                <FaChevronRight size={30} color="white" />
+            </SliderArrow>
+          )}
+      </div>
     </RowContainer>
   );
 }

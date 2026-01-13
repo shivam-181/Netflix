@@ -9,10 +9,19 @@ const HeroContainer = styled.div`
   min-height: 45rem; /* Ensure minimum height */
   width: 100%;
   background-image: url(${ASSETS.LANDING_BG});
-  background-size: 100%; /* Fully touches the sides */
-  background-position: center 40%; /* Kept the slight upward shift */
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
   background-color: #000;
+
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: 100vh;
+    background-position: center top; 
+    
+    display: flex;
+    flex-direction: column;
+  }
   font-family: 'Google Sans Flex', sans-serif;
   
   /* The dark overlay logic */
@@ -43,6 +52,10 @@ const Content = styled.div`
   padding: 0 1rem 2rem; /* Reduced bottom padding to move content down */
   color: white;
   box-sizing: border-box; 
+
+  @media (max-width: 768px) {
+      flex: 1;
+  } 
 `;
 
 const Title = styled.h1`

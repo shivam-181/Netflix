@@ -21,7 +21,7 @@ const PageContainer = styled.div`
 const ContentStack = styled.div`
   position: relative;
   z-index: 10;
-  margin-top: -70px; 
+  margin-top: 0px; 
   padding-bottom: 50px;
   display: flex;
   flex-direction: column;

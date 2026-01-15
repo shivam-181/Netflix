@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import HoverCard from './HoverCard';
+import RankIcon from './RankIcon';
 
 const RowContainer = styled.div`
   margin-bottom: 10px; 
@@ -90,24 +91,7 @@ const RankedWrapper = styled.div`
   margin-right: 10px; 
 `;
 
-const RankSvg = styled.svg`
-  width: 70px;
-  height: 105px;
-  @media (min-width: 600px) { 
-    width: 90px;
-    height: 135px; 
-  }
-  @media (min-width: 960px) { 
-    width: 110px;
-    height: 165px; 
-  }
-  fill: #000000;
-  stroke: #595959;
-  stroke-width: 4px;
-  margin-right: -30px; /* Balanced overlap */
-  flex-shrink: 0;
-  z-index: 0;
-`;
+
 
 const SliderArrow = styled.div<{ direction: 'left' | 'right' }>`
   position: absolute;
@@ -224,9 +208,7 @@ export default function ContentRow({ title, data, isLargeRow, isRanked }: Conten
               if (isRanked) {
                 return (
                   <RankedWrapper key={item._id}>
-                      <RankSvg viewBox="0 0 140 280">
-                        <text x="50%" y="270" textAnchor="middle" fontSize="280" fontWeight="900" letterSpacing="-10">{index + 1}</text>
-                      </RankSvg>
+<RankIcon rank={index + 1} />
                       <HoverCard item={item} isLarge={true} isRanked={true} />
                   </RankedWrapper>
                 );

@@ -316,16 +316,8 @@ export default function Navbar() {
       <Right>
 
         <div style={{ display: 'flex', alignItems: 'center', height: '32px', border: searchVisible ? '1px solid white' : 'none', background: searchVisible ? '#141414' : 'transparent', transition: 'all 0.3s', paddingLeft: '4px' }}>
-          <svg 
-             width="24" 
-             height="24" 
-             viewBox="0 0 24 24" 
-             fill="white" 
-             xmlns="http://www.w3.org/2000/svg" 
-             style={{ cursor: 'pointer', margin: '0 4px', display: 'block' }}
-             onClick={() => setSearchVisible(!searchVisible)}
-          >
-             <path fillRule="evenodd" clipRule="evenodd" d="M16 11.586L21.707 17.293L20.293 18.707L14.586 13C13.676 13.649 12.576 14.043 11.385 14.043C7.307 14.043 4 10.899 4 7.021C4 3.143 7.307 0 11.385 0C15.464 0 18.771 3.143 18.771 7.021C18.771 8.783 18.118 10.378 17.039 11.586H16ZM11.385 2C8.528 2 6.216 4.249 6.216 7.021C6.216 9.794 8.528 12.043 11.385 12.043C14.243 12.043 16.554 9.794 16.554 7.021C16.554 4.249 14.243 2 11.385 2Z" />
+          <svg viewBox="0 0 24 24" width="24" height="24" className="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" style={{ cursor: 'pointer', margin: '0 4px', display: 'block' }} onClick={() => setSearchVisible(!searchVisible)}>
+             <path fill="currentColor" fillRule="evenodd" d="M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0m-1.38 7.03a9 9 0 1 1 1.41-1.41l5.68 5.67-1.42 1.42z" clipRule="evenodd"></path>
           </svg>
           <SearchInput 
             visible={searchVisible} 
@@ -340,8 +332,8 @@ export default function Navbar() {
         
         {/* Authentic Bell Icon with Notification Menu */}
         <NotificationWrapper>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer', display: 'block' }}>
-                <path d="M18 17H6V15L7 14V9C7 5.686 9.686 3 13 3C16.314 3 19 5.686 19 9V14L20 15V17ZM13 21C11.343 21 10 19.657 10 18H16C16 19.657 14.657 21 13 21Z" />
+            <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" style={{ cursor: 'pointer', display: 'block' }}>
+                <path fill="currentColor" fillRule="evenodd" d="M13 4.07A7 7 0 0 1 19 11v4.25q1.58.12 3.1.28l-.2 2a93 93 0 0 0-19.8 0l-.2-2q1.52-.15 3.1-.28V11a7 7 0 0 1 6-6.93V2h2zm4 11.06V11a5 5 0 0 0-10 0v4.13a97 97 0 0 1 10 0m-8.37 4.24C8.66 20.52 10.15 22 12 22s3.34-1.48 3.37-2.63c.01-.22-.2-.37-.42-.37h-5.9c-.23 0-.43.15-.42.37" clipRule="evenodd"></path>
             </svg>
             <NotificationDropdown />
         </NotificationWrapper>

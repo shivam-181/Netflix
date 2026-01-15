@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/navigation';
-import { FaPlay, FaInfoCircle, FaVolumeMute, FaVolumeUp } from 'react-icons/fa'; 
+import { FaVolumeMute, FaVolumeUp } from 'react-icons/fa'; 
 import { useModalStore } from '@/store/useModalStore';
 import { fetchLogo, fetchTrailer } from '@/lib/tmdb';
 import YouTube from 'react-youtube';
@@ -362,10 +362,16 @@ export default function Billboard({ movie }: BillboardProps) {
             
         <ButtonRow>
           <PlayButton onClick={() => router.push(`/watch/${movie._id}?type=${movie.media_type || 'movie'}`)}>
-            <FaPlay /> Play
+            <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" role="img">
+                <path fill="currentColor" d="M5 2.7a1 1 0 0 1 1.48-.88l16.93 9.3a1 1 0 0 1 0 1.76l-16.93 9.3A1 1 0 0 1 5 21.31z"></path>
+            </svg>
+            <span style={{ marginLeft: '0.5rem' }}>Play</span>
           </PlayButton>
           <InfoButton onClick={() => openModal(movie)}>
-            <FaInfoCircle /> More Info
+            <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" role="img">
+                <path fill="currentColor" fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2M0 12C0 5.373 5.373 0 12 0s12 5.373 12 12-5.373 12-12 12S0 18.627 0 12m13-2v8h-2v-8zm-1-1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" clipRule="evenodd"></path>
+            </svg>
+            <span style={{ marginLeft: '0.5rem' }}>More Info</span>
           </InfoButton>
         </ButtonRow>
       </InfoLayer>
@@ -374,7 +380,9 @@ export default function Billboard({ movie }: BillboardProps) {
           <MuteButton onClick={() => setMuted(!muted)}>
             {muted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
           </MuteButton>
-          <AgeBadge>U/A 16+</AgeBadge>
+          <AgeBadge>
+             <span className="maturity-number">U/A 16+</span>
+          </AgeBadge>
       </RightControls>
     </Container>
   );
